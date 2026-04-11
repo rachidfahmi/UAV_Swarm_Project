@@ -19,8 +19,8 @@
         "uav": 0
       },
       "config": {
-        "alpha": 0.02,
-        "beta": 0.5,
+        "alpha": 0.05,
+        "beta": 0.3,
         "shared_info": false,
         "pinned": false
       },
@@ -38,8 +38,8 @@
         "uav": 0
       },
       "config": {
-        "alpha": 0.02,
-        "beta": 0.5,
+        "alpha": 0.05,
+        "beta": 0.3,
         "shared_info": false,
         "pinned": true
       },
@@ -65,15 +65,15 @@
       },
       "cell_map": [
         [
-          5,
-          5
+          14,
+          22
         ],
         [
           5,
-          24
+          14
         ],
         [
-          24,
+          14,
           5
         ]
       ]
