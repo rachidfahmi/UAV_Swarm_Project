@@ -1,0 +1,38 @@
+{
+  "scenario": {
+    "shape": [30, 30],
+    "origin": [0, 0],
+    "wrapped": false
+  },
+  "cells": {
+    "default": {
+      "delay": "transport",
+      "cell_type": "uav_search",
+      "state": {"prob": 0.0, "uav": 0},
+      "config": {"alpha": 0.05},
+      "neighborhood": [
+        {"type": "moore", "range": 1, "vicinity": 1.0}
+      ]
+    },
+    "hotspot": {
+      "state": {"prob": 1.0, "uav": 0},
+      "cell_map": [[22, 22]]
+    },
+    "uav_start": {
+      "state": {"prob": 0.0, "uav": 100},
+      "cell_map": [[15, 15]]
+    }
+  },
+  "viewer": [
+    {
+      "field": "prob",
+      "breaks": [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+      "colors": [[215,25,28],[253,174,97],[255,255,191],[171,221,164],[43,131,186]]
+    },
+    {
+      "field": "uav",
+      "breaks": [0, 1, 9, 100, 101],
+      "colors": [[240,240,240],[255,220,100],[255,160,0],[255,80,0],[255,0,0]]
+    }
+  ]
+}

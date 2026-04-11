@@ -1,0 +1,82 @@
+{
+  "scenario": {
+    "shape": [
+      30,
+      30
+    ],
+    "origin": [
+      0,
+      0
+    ],
+    "wrapped": false
+  },
+  "cells": {
+    "default": {
+      "delay": "transport",
+      "cell_type": "uav_search",
+      "state": {
+        "prob": 0.0,
+        "uav": 0
+      },
+      "config": {
+        "alpha": 0.08,
+        "beta": 0.5,
+        "shared_info": false,
+        "pinned": false
+      },
+      "neighborhood": [
+        {
+          "type": "moore",
+          "range": 1,
+          "vicinity": 1.0
+        }
+      ]
+    },
+    "hotspot": {
+      "state": {
+        "prob": 1.0,
+        "uav": 0
+      },
+      "config": {
+        "alpha": 0.08,
+        "beta": 0.5,
+        "shared_info": false,
+        "pinned": true
+      },
+      "cell_map": [
+        [
+          22,
+          22
+        ],
+        [
+          5,
+          22
+        ],
+        [
+          22,
+          5
+        ]
+      ]
+    },
+    "uav_start": {
+      "state": {
+        "prob": 0.0,
+        "uav": 100
+      },
+      "cell_map": [
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          24
+        ],
+        [
+          24,
+          5
+        ]
+      ]
+    }
+  }
+}
