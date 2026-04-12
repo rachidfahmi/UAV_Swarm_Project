@@ -1,66 +1,96 @@
 #!/usr/bin/env python3
-import re, os
+import os, csv, re
+from collections import defaultdict
 
-GRID_SIZE   = 30
-TOTAL_CELLS = GRID_SIZE * GRID_SIZE
-HOTSPOTS    = {(22,22), (5,22), (22,5)}   # all 3 targets
-LOG_DIR     = "output"
+GRID = 30 * 30
+OUT  = "output"
 
-EXPERIMENTS = {
-    "exp1_independent": "Exp1 Independent (clustered)",
-    "exp2_partitioned": "Exp2 Partitioned (corners)",
-    "exp3_shared":      "Exp3 Shared Info",
-    "exp4a_alpha_low":  "Exp4a alpha=0.02",
-    "exp4b_alpha_high": "Exp4b alpha=0.08",
-}
-
-LINE_RE = re.compile(r"^(\d+);(\d+);\((\d+),(\d+)\);([^;]*);([\d.e+\-]+),(\d+)$")
+# MUST match run.sh output names
+EXPS = [
+    ("exp0_single",      "Exp0: Single UAV baseline    "),
+    ("exp1_independent", "Exp1: Multi UAV independent  "),
+    ("exp2_partitioned", "Exp2: Multi UAV partitioned  "),
+    ("exp3_shared",      "Exp3: Multi UAV shared info  "),
+    ("exp4a_alpha_low",  "Exp4a: Multi UAV α=0.02      "),
+    ("exp4b_alpha_high", "Exp4b: Multi UAV α=0.10      "),
+]
 
 def parse_log(path):
-    events = []
+    prev_uav  = {}
+    arrivals  = defaultdict(int)
+    locked    = set()
+    t_first   = None
+
     with open(path) as f:
-        for line in f:
-            m = LINE_RE.match(line.strip())
-            if not m: continue
-            _, step, row, col, port, prob, uav = m.groups()
-            if port == "outputNeighborhood": continue
-            events.append((int(step), int(row), int(col), float(prob), int(uav)))
-    return events
+        lines = f.readlines()
 
-def metrics(events):
-    cell_steps = {}
-    hs_found   = {}   # hotspot cell → first step it was confirmed
-    locked     = set()
-    fs         = {}
+    start = 1 if lines[0].strip() == "sep=;" else 0
+    reader = csv.DictReader(lines[start:], delimiter=";")
 
-    for step, row, col, prob, uav in events:
-        fs[(row,col)] = (prob, uav)
-        if uav == 100:
-            cell_steps.setdefault((row,col), set()).add(step)
-        if (row,col) in HOTSPOTS:
-            if uav in (100, 200) and (row,col) not in hs_found:
-                hs_found[(row,col)] = step
-            if uav == 200:
-                locked.add((row,col))
+    for row in reader:
+        t    = float(row["time"])
+        name = row["model_name"].strip()
+        data = row["data"].strip()
 
-    visited      = len(cell_steps)
-    cov          = round(100.0 * visited / TOTAL_CELLS, 1)
-    ovlp         = round(100.0 * sum(1 for s in cell_steps.values() if len(s)>1) / max(visited,1), 1)
-    t_first      = min(hs_found.values()) if hs_found else "never"
-    n_found      = len(hs_found)
-    n_locked     = len(locked)
+        m = re.match(r'\((\d+),\s*(\d+)\)', name)
+        if not m:
+            continue
+        cell = (int(m.group(1)), int(m.group(2)))
 
-    return {
-        "cov": cov, "cells": visited, "ovlp": ovlp,
-        "t_first": t_first, "found": f"{n_found}/3", "locked": f"{n_locked}/3"
-    }
+        parts = data.split(",")
+        if len(parts) < 2:
+            continue
+        try:
+            uav = int(parts[1])
+        except ValueError:
+            continue
 
-print(f"\n{'Experiment':<38} {'Cov%':>6} {'Cells':>6} {'Ovlp%':>7} {'T_first':>8} {'Found':>6} {'Locked':>7}")
-print("-"*88)
-for key, label in EXPERIMENTS.items():
-    path = os.path.join(LOG_DIR, f"{key}_log.csv")
-    if not os.path.exists(path): print(f"  {label:<36}  (missing)"); continue
-    m = metrics(parse_log(path))
-    print(f"  {label:<36} {m['cov']:>6} {m['cells']:>6} {m['ovlp']:>7} "
-          f"{str(m['t_first']):>8} {m['found']:>6} {m['locked']:>7}")
+        last = prev_uav.get(cell, 0)
+
+        # count arrivals
+        if uav == 100 and last != 100:
+            arrivals[cell] += 1
+
+        # detect hotspot found
+        if uav == 200 and last != 200:
+            locked.add(cell)
+            if t_first is None or t < t_first:
+                t_first = t
+
+        prev_uav[cell] = uav
+
+    cells = len(arrivals)
+    cov   = round(cells / GRID * 100, 1)
+
+    # % of visited cells that were revisited
+    overlap = round(
+        sum(1 for v in arrivals.values() if v > 1) / cells * 100, 1
+    ) if cells else 0.0
+
+    # revisit intensity (% of extra visits)
+    total_visits = sum(arrivals.values())
+    intensity = round(
+        sum(v - 1 for v in arrivals.values() if v > 1) / total_visits * 100, 1
+    ) if total_visits else 0.0
+
+    found = len(locked)
+    t_str = str(int(t_first)) if t_first is not None else "N/A"
+
+    return cov, cells, overlap, intensity, t_str, found
+
+
+HDR = f"{'Experiment':<30} {'Cov%':>5} {'Cells':>6} {'Ovlp%':>6} {'Intns%':>7} {'T_first':>8} {'Found':>6}"
+print("\n" + HDR)
+print("─" * len(HDR))
+
+for key, label in EXPS:
+    path = os.path.join(OUT, f"{key}_log.csv")
+    if not os.path.exists(path):
+        print(f"{label:<30}  [missing: {path}]")
+        continue
+
+    cov, cells, ovlp, intensity, t_first, found = parse_log(path)
+
+    print(f"{label:<30} {cov:>5} {cells:>6} {ovlp:>6} {intensity:>7} {t_first:>8} {found:>5}/3")
+
 print()

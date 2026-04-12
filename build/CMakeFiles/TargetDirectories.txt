@@ -1,3 +1,0 @@
-/home/rach/TermProjectUAV/UAV_Swarm_Project/build/CMakeFiles/UAVSearch.dir
-/home/rach/TermProjectUAV/UAV_Swarm_Project/build/CMakeFiles/edit_cache.dir
-/home/rach/TermProjectUAV/UAV_Swarm_Project/build/CMakeFiles/rebuild_cache.dir

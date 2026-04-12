@@ -1,82 +1,20 @@
 {
-  "scenario": {
-    "shape": [
-      30,
-      30
-    ],
-    "origin": [
-      0,
-      0
-    ],
-    "wrapped": false
-  },
+  "scenario": {"shape": [30,30], "origin": [0,0], "wrapped": false},
   "cells": {
     "default": {
-      "delay": "transport",
-      "cell_type": "uav_search",
-      "state": {
-        "prob": 0.0,
-        "uav": 0
-      },
-      "config": {
-        "alpha": 0.05,
-        "beta": 0.7,
-        "shared_info": false,
-        "pinned": false
-      },
-      "neighborhood": [
-        {
-          "type": "moore",
-          "range": 1,
-          "vicinity": 1.0
-        }
-      ]
+      "delay": "transport", "cell_type": "uav_search",
+      "state": {"prob": 0.0, "uav": 0},
+      "config": {"alpha": 0.10, "beta": 0.5, "shared_info": false, "pinned": false},
+      "neighborhood": [{"type": "moore", "range": 1, "vicinity": 1.0}]
     },
     "hotspot": {
-      "state": {
-        "prob": 1.0,
-        "uav": 0
-      },
-      "config": {
-        "alpha": 0.05,
-        "beta": 0.7,
-        "shared_info": false,
-        "pinned": true
-      },
-      "cell_map": [
-        [
-          22,
-          22
-        ],
-        [
-          5,
-          22
-        ],
-        [
-          22,
-          5
-        ]
-      ]
+      "state": {"prob": 1.0, "uav": 0},
+      "config": {"alpha": 0.10, "beta": 0.5, "shared_info": false, "pinned": true},
+      "cell_map": [[22,22],[5,22],[22,5]]
     },
     "uav_start": {
-      "state": {
-        "prob": 0.0,
-        "uav": 100
-      },
-      "cell_map": [
-        [
-          14,
-          22
-        ],
-        [
-          5,
-          14
-        ],
-        [
-          14,
-          5
-        ]
-      ]
+      "state": {"prob": 0.0, "uav": 100},
+      "cell_map": [[2,2],[2,27],[27,2]]
     }
   }
 }
