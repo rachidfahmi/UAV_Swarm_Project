@@ -1,20 +1,454 @@
 {
-  "scenario": {"shape": [30,30], "origin": [0,0], "wrapped": false},
+  "scenario": {
+    "shape": [
+      30,
+      30
+    ],
+    "origin": [
+      0,
+      0
+    ],
+    "wrapped": false
+  },
   "cells": {
     "default": {
-      "delay": "transport", "cell_type": "uav_search",
-      "state": {"prob": 0.0, "uav": 0},
-      "config": {"alpha": 0.02, "beta": 0.5, "shared_info": false, "pinned": false},
-      "neighborhood": [{"type": "moore", "range": 1, "vicinity": 1.0}]
+      "delay": "transport",
+      "cell_type": "uav_search",
+      "state": {
+        "prob": 0.0,
+        "uav": 0,
+        "zone": 0,
+        "uncertainty": 1.0,
+        "visit_penalty": 0.0,
+        "shared_penalty": 0.0
+      },
+      "config": {
+        "alpha": 0.02,
+        "beta": 0.5,
+        "shared_info": false,
+        "pinned": false,
+        "w_prob": 0.6,
+        "w_unc": 0.4,
+        "w_visit": 0.25,
+        "w_shared": 0.35,
+        "beta_unc": 0.4,
+        "beta_visit": 0.3,
+        "visit_decay": 0.98,
+        "shared_decay": 0.95,
+        "alpha_high": 0.08,
+        "alpha_low": 0.02
+      },
+      "neighborhood": [
+        {
+          "type": "moore",
+          "range": 1,
+          "vicinity": 1.0
+        }
+      ]
     },
     "hotspot": {
-      "state": {"prob": 1.0, "uav": 0},
-      "config": {"alpha": 0.02, "beta": 0.5, "shared_info": false, "pinned": true},
-      "cell_map": [[22,22],[5,22],[22,5]]
+      "state": {
+        "prob": 1.0,
+        "uav": 0,
+        "zone": 1,
+        "uncertainty": 1.0,
+        "visit_penalty": 0.0,
+        "shared_penalty": 0.0
+      },
+      "config": {
+        "alpha": 0.02,
+        "beta": 0.5,
+        "shared_info": false,
+        "pinned": true
+      },
+      "cell_map": [
+        [
+          22,
+          22
+        ],
+        [
+          5,
+          22
+        ],
+        [
+          22,
+          5
+        ]
+      ]
     },
     "uav_start": {
-      "state": {"prob": 0.0, "uav": 100},
-      "cell_map": [[2,2],[2,27],[27,2]]
+      "state": {
+        "prob": 0.0,
+        "uav": 100,
+        "zone": 0,
+        "uncertainty": 1.0,
+        "visit_penalty": 0.0,
+        "shared_penalty": 0.0
+      },
+      "cell_map": [
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          27
+        ],
+        [
+          27,
+          2
+        ]
+      ]
+    },
+    "high_zone": {
+      "state": {
+        "zone": 1
+      },
+      "cell_map": [
+        [
+          12,
+          12
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          12,
+          14
+        ],
+        [
+          12,
+          15
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          12,
+          17
+        ],
+        [
+          13,
+          12
+        ],
+        [
+          13,
+          13
+        ],
+        [
+          13,
+          14
+        ],
+        [
+          13,
+          15
+        ],
+        [
+          13,
+          16
+        ],
+        [
+          13,
+          17
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          14,
+          13
+        ],
+        [
+          14,
+          14
+        ],
+        [
+          14,
+          15
+        ],
+        [
+          14,
+          16
+        ],
+        [
+          14,
+          17
+        ],
+        [
+          15,
+          12
+        ],
+        [
+          15,
+          13
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          15,
+          15
+        ],
+        [
+          15,
+          16
+        ],
+        [
+          15,
+          17
+        ],
+        [
+          16,
+          12
+        ],
+        [
+          16,
+          13
+        ],
+        [
+          16,
+          14
+        ],
+        [
+          16,
+          15
+        ],
+        [
+          16,
+          16
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          17,
+          12
+        ],
+        [
+          17,
+          13
+        ],
+        [
+          17,
+          14
+        ],
+        [
+          17,
+          15
+        ],
+        [
+          17,
+          16
+        ],
+        [
+          17,
+          17
+        ]
+      ]
+    },
+    "low_zone": {
+      "state": {
+        "zone": 2
+      },
+      "cell_map": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          5
+        ]
+      ]
+    },
+    "obstacle_barrier": {
+      "state": {
+        "prob": 0.0,
+        "uav": 0,
+        "zone": 3,
+        "uncertainty": 1.0,
+        "visit_penalty": 0.0,
+        "shared_penalty": 0.0
+      },
+      "cell_map": [
+        [
+          10,
+          20
+        ],
+        [
+          11,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          13,
+          20
+        ],
+        [
+          14,
+          20
+        ],
+        [
+          15,
+          20
+        ],
+        [
+          16,
+          20
+        ],
+        [
+          17,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          19,
+          20
+        ]
+      ]
     }
   }
 }

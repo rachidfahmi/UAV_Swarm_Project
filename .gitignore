@@ -1,5 +1,8 @@
-bin/
 build/
-output/*.csv
+bin/UAVSearch
 *.o
-*.log
+*.out
+*.d
+*.cmake
+CMakeCache.txt
+CMakeFiles/
