@@ -104,148 +104,180 @@ This checks:
 - a quick simulation runs
 - metrics script works
 - outputs are generated
-Run a single scenario
 
-General usage:
+## Run a single scenario
 
+### General usage
+
+```
 ./bin/UAVSearch SCENARIO_CONFIG.json [SIM_TIME]
+```
 
-Example:
+### Example
 
+```
 ./bin/UAVSearch config/base_single_uav.json 50
+```
 
 If SIM_TIME is omitted, the program uses its internal default.
 
-Run all experiments
+## Run all experiments
 
 To run the full experiment set:
 
+```bash
 ./run.sh
+```
 
 To run a shorter test version:
 
+```bash
 ./run.sh 100
+```
 
 The script runs all configured experiments and stores logs in output/.
 
-Current experiment set
-Config file	Meaning
-base_single_uav.json	Single-UAV baseline
-exp1_independent.json	Multi-UAV independent search
-exp2_partitioned.json	Multi-UAV partitioned search
-exp3_shared.json	Multi-UAV shared-information search
-exp4a_alpha_low.json	Low diffusion sensitivity (alpha = 0.02)
-exp4b_alpha_high.json	High diffusion sensitivity (alpha = 0.10)
-Metrics
+## Current experiment set
+
+| Config file | Meaning |
+|-------------|---------|
+| base_single_uav.json | Single-UAV baseline |
+| exp1_independent.json | Multi-UAV independent search |
+| exp2_partitioned.json | Multi-UAV partitioned search |
+| exp3_shared.json | Multi-UAV shared-information search |
+| exp4a_alpha_low.json | Low diffusion sensitivity (alpha = 0.02) |
+| exp4b_alpha_high.json | High diffusion sensitivity (alpha = 0.10) |
+
+## Metrics
 
 After running experiments, compute metrics with:
 
+```bash
 python3 metrics.py
+```
 
 The script reports:
 
-coverage percentage
-number of visited cells
-overlap percentage
-revisit intensity
-first detection time
-number of hotspots found
-Figure generation
+- coverage percentage
+- number of visited cells
+- overlap percentage
+- revisit intensity
+- first detection time
+- number of hotspots found
+
+## Figure generation
 
 Generate all figures with:
 
+```bash
 python3 visualize.py
+```
 
 This produces figures in figures/.
 
-Main generated figures
-Figure	Meaning
-fig0_environment.png	Environment layout: zones, obstacles, starts, hotspots
-fig1_heatmaps.png	Final probability fields for all experiments
-fig2_metrics.png	Metrics comparison across experiments
-fig3_coverage_time.png	Coverage growth over time
-fig4_exp1_vs_exp3.png	Temporal comparison: independent vs shared
-fig5_alpha_comparison.png	Diffusion sensitivity comparison
-fig6_radar.png	Multi-metric summary view
-fig7_entropy_time.png	Uncertainty / entropy evolution over time
-Output files
+## Main generated figures
+
+| Figure | Meaning |
+|--------|---------|
+| fig0_environment.png | Environment layout: zones, obstacles, starts, hotspots |
+| fig1_heatmaps.png | Final probability fields for all experiments |
+| fig2_metrics.png | Metrics comparison across experiments |
+| fig3_coverage_time.png | Coverage growth over time |
+| fig4_exp1_vs_exp3.png | Temporal comparison: independent vs shared |
+| fig5_alpha_comparison.png | Diffusion sensitivity comparison |
+| fig6_radar.png | Multi-metric summary view |
+| fig7_entropy_time.png | Uncertainty / entropy evolution over time |
+
+## Output files
 
 After successful runs:
 
-logs are saved as output/*_log.csv
-figures are saved as figures/*.png
+- logs are saved as output/*_log.csv
+- figures are saved as figures/*.png
 
 Typical logs:
 
-exp0_single_log.csv
-exp1_independent_log.csv
-exp2_partitioned_log.csv
-exp3_shared_log.csv
-exp4a_alpha_low_log.csv
-exp4b_alpha_high_log.csv
-Important implementation notes
-1. Hotspots
+- exp0_single_log.csv
+- exp1_independent_log.csv
+- exp2_partitioned_log.csv
+- exp3_shared_log.csv
+- exp4a_alpha_low_log.csv
+- exp4b_alpha_high_log.csv
 
-Some hotspot cells are configured as pinned sources to preserve strong signal structure during experiments.
+## Important implementation notes
 
-2. Shared information
+1. **Hotspots**
 
-Shared-information search does not guarantee zero overlap. It reduces ignorance through shared penalties and coordination effects, but UAVs can still converge on the same attractive region.
+   Some hotspot cells are configured as pinned sources to preserve strong signal structure during experiments.
 
-3. Partitioned search
+2. **Shared information**
 
-Partitioning is the cleanest strategy for reducing overlap, but it may reduce total explored area compared with more flexible strategies.
+   Shared-information search does not guarantee zero overlap. It reduces ignorance through shared penalties and coordination effects, but UAVs can still converge on the same attractive region.
 
-4. Diffusion
+3. **Partitioned search**
 
-Lower diffusion tends to preserve stronger local gradients and can increase coverage, but often with more revisit redundancy. Higher diffusion smooths the field and may reduce exploration breadth.
+   Partitioning is the cleanest strategy for reducing overlap, but it may reduce total explored area compared with more flexible strategies.
 
-5. Heterogeneous environment
+4. **Diffusion**
 
-The final implementation includes:
+   Lower diffusion tends to preserve stronger local gradients and can increase coverage, but often with more revisit redundancy. Higher diffusion smooths the field and may reduce exploration breadth.
 
-high-value zones
-low-value zones
-obstacle barriers
+5. **Heterogeneous environment**
 
-So the grid is not fully open in the final version.
+   The final implementation includes:
 
-Typical workflow
+   - high-value zones
+   - low-value zones
+   - obstacle barriers
+
+   So the grid is not fully open in the final version.
+
+## Typical workflow
 
 Recommended order:
 
+```bash
 bash build_sim.sh
 ./check.sh
 ./run.sh
 python3 metrics.py
 python3 visualize.py
-Troubleshooting
-JSON parse error
+```
+
+## Troubleshooting
+
+### JSON parse error
 
 Validate a config file with:
 
+```bash
 python3 -m json.tool config/base_single_uav.json > /dev/null
-Cadmium “component ID already defined”
+```
+
+### Cadmium "component ID already defined"
 
 This usually means the same cell appears in more than one custom cell_map block in a JSON config. Make sure custom regions do not overlap unless intentionally supported by your setup.
 
-Binary missing
+### Binary missing
 
 Rebuild with:
 
+```bash
 bash build_sim.sh
-Submission note
+```
+
+## Submission note
 
 This repository is structured so the project can be:
 
-rebuilt from source
-checked automatically with check.sh
-rerun with run.sh
-analyzed with metrics.py
-visualized with visualize.py
+- rebuilt from source
+- checked automatically with check.sh
+- rerun with run.sh
+- analyzed with metrics.py
+- visualized with visualize.py
 
 A couple of things in your old README were outdated:
-- “UAV movement is greedy (no memory)” is no longer really true in the simple sense, since you added score-based logic, penalties, and uncertainty.
-- “obstacles are NOT included” is now false, because your final implementation does include obstacle barriers.
+- "UAV movement is greedy (no memory)" is no longer really true in the simple sense, since you added score-based logic, penalties, and uncertainty.
+- "obstacles are NOT included" is now false, because your final implementation does include obstacle barriers.
 
 Next smartest move is to update `model.md` so it matches the final implementation too.
