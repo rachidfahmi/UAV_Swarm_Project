@@ -1,102 +1,251 @@
-# ⚠️ TEMPORARY README — UAV Swarm Project (TEAM USE ONLY)
+# UAV Swarm Project
 
-This is a **working README for our team** while we finalize the project.  
-We will clean and rewrite this before submission.
+A Cadmium / Cell-DEVS simulation of cooperative UAV search on a 30×30 grid with multiple coordination strategies, probability-field diffusion, heterogeneous zones, uncertainty-guided search, and post-processing scripts for metrics and figures.
 
----
+## Project summary
 
-## 🧠 Project Overview
+This project models a multi-UAV search process using a Cell-DEVS grid in Cadmium.
 
-We simulate a **multi-UAV search system** using **Cell-DEVS (Cadmium)**.
+The environment is a 30×30 discrete grid. Each cell stores a state with:
+- `prob`: target-detection probability or belief value in `[0,1]`
+- `uav`: UAV occupancy / movement code
+- `zone`: environment type
+- `uncertainty`: local search uncertainty
+- `visit_penalty`: revisit discouragement
+- `shared_penalty`: shared coordination discouragement
 
-- Environment: 30×30 grid  
-- Each cell stores:
-  - `prob` → probability of target
-  - `uav` → UAV state  
+The model includes:
+- probability diffusion
+- probability + distance decision scoring
+- heterogeneous regions
+- obstacle barriers
+- uncertainty-aware search
+- multiple coordination strategies
 
-UAVs:
-- move toward highest probability (greedy)
-- interact locally (Moore neighborhood)
-- follow different coordination strategies
+## Model features
 
----
+### Search behavior
+UAVs move using a score-based local rule rather than simple highest-probability greedy motion.
 
-## ⚙️ How to run
+The score combines:
+- local probability
+- local uncertainty
+- travel distance
+- revisit penalty
+- shared penalty
+- zone preference
 
-### 1. Build (only once)
+### Environment structure
+The environment is not uniform. It includes:
+- high-value zones
+- low-value zones
+- obstacle cells
+
+Obstacle cells block UAV occupancy and suppress probability there.
+
+### Coordination logic
+Different experiment files enable different coordination setups:
+- single-UAV baseline
+- multi-UAV independent search
+- partitioned search
+- shared-information search
+- diffusion sensitivity analysis
+
+## Repository structure
+
+- `main/` — C++ source code
+- `main/include/` — Cell state and cell behavior headers
+- `config/` — JSON scenario files
+- `output/` — generated simulation logs
+- `figures/` — generated figures for analysis/report
+- `build_sim.sh` — build script
+- `check.sh` — validation script
+- `run.sh` — batch experiment runner
+- `metrics.py` — metrics extraction from logs
+- `visualize.py` — figure generation
+- `README.md` — this file
+- `model.md` — model notes / supporting description
+
+## Requirements
+
+You need:
+- Linux / WSL environment
+- CMake
+- g++
+- Python 3
+- Cadmium available in your include path / local setup
+
+## Build
+
+Build the simulator with:
+
 ```bash
 bash build_sim.sh
-2. Check everything works
+```
+
+This generates the executable:
+
+```
+./bin/UAVSearch
+```
+
+## Quick validation
+
+Before running all experiments, validate the project with:
+
+```bash
 ./check.sh
-3. Run all experiments
+```
+
+This checks:
+
+- binary exists
+- configs are valid
+- a quick simulation runs
+- metrics script works
+- outputs are generated
+Run a single scenario
+
+General usage:
+
+./bin/UAVSearch SCENARIO_CONFIG.json [SIM_TIME]
+
+Example:
+
+./bin/UAVSearch config/base_single_uav.json 50
+
+If SIM_TIME is omitted, the program uses its internal default.
+
+Run all experiments
+
+To run the full experiment set:
+
 ./run.sh
 
-Optional: shorter run
+To run a shorter test version:
 
 ./run.sh 100
-4. Generate figures
-python3 visualize.py
-📁 Important folders
-config/ → experiment setups (JSON)
-main/ → C++ Cell-DEVS model
-output/ → simulation logs (CSV)
-figures/ → generated plots
-metrics.py → computes results
-visualize.py → generates figures
-run.sh → runs experiments
-check.sh → validates project
-🧪 Experiments
-File	Meaning
-base_single_uav.json	Single UAV baseline
-exp1_independent.json	Multi-UAV, no coordination
-exp2_partitioned.json	UAVs start in different regions
-exp3_shared.json	UAVs influence each other
-exp4a_alpha_low.json	Low diffusion (α = 0.02)
-exp4b_alpha_high.json	High diffusion (α = 0.10)
-📊 Output
 
-After running experiments:
+The script runs all configured experiments and stores logs in output/.
 
-Logs → output/*_log.csv
-Metrics → printed in terminal
-Figures → figures/*.png
-Metrics include:
-Coverage (% explored cells)
-Overlap (% revisited cells)
-Intensity (% extra revisits)
-Time to first detection
-Targets found
-📊 Visualization (for report)
+Current experiment set
+Config file	Meaning
+base_single_uav.json	Single-UAV baseline
+exp1_independent.json	Multi-UAV independent search
+exp2_partitioned.json	Multi-UAV partitioned search
+exp3_shared.json	Multi-UAV shared-information search
+exp4a_alpha_low.json	Low diffusion sensitivity (alpha = 0.02)
+exp4b_alpha_high.json	High diffusion sensitivity (alpha = 0.10)
+Metrics
 
-We use:
+After running experiments, compute metrics with:
+
+python3 metrics.py
+
+The script reports:
+
+coverage percentage
+number of visited cells
+overlap percentage
+revisit intensity
+first detection time
+number of hotspots found
+Figure generation
+
+Generate all figures with:
 
 python3 visualize.py
 
-This generates:
+This produces figures in figures/.
 
-fig1_heatmaps.png → final state for all experiments
-fig2_metrics.png → comparison charts
-fig3_coverage_time.png → coverage over time
-fig4_exp1_vs_exp3.png → independent vs shared behavior
-fig5_alpha_comparison.png → diffusion sensitivity
-fig6_radar.png → overall comparison
-⚠️ Notes (important)
-UAV movement is greedy (no memory)
-Once UAV reaches hotspot → it may stop exploring
-Shared info increases movement but also overlap
-Diffusion (α) changes probability spread but has limited effect due to greedy policy
-⚠️ Note on Obstacles
+Main generated figures
+Figure	Meaning
+fig0_environment.png	Environment layout: zones, obstacles, starts, hotspots
+fig1_heatmaps.png	Final probability fields for all experiments
+fig2_metrics.png	Metrics comparison across experiments
+fig3_coverage_time.png	Coverage growth over time
+fig4_exp1_vs_exp3.png	Temporal comparison: independent vs shared
+fig5_alpha_comparison.png	Diffusion sensitivity comparison
+fig6_radar.png	Multi-metric summary view
+fig7_entropy_time.png	Uncertainty / entropy evolution over time
+Output files
 
-In the initial proposal and WIP presentation, obstacles were considered.
+After successful runs:
 
-However, in the final implementation:
+logs are saved as output/*_log.csv
+figures are saved as figures/*.png
 
-obstacles are NOT included
-the grid is fully open
+Typical logs:
 
-This was done to:
+exp0_single_log.csv
+exp1_independent_log.csv
+exp2_partitioned_log.csv
+exp3_shared_log.csv
+exp4a_alpha_low_log.csv
+exp4b_alpha_high_log.csv
+Important implementation notes
+1. Hotspots
 
-isolate coordination effects
-simplify analysis
+Some hotspot cells are configured as pinned sources to preserve strong signal structure during experiments.
 
-Obstacles can be added later as an extension.
+2. Shared information
+
+Shared-information search does not guarantee zero overlap. It reduces ignorance through shared penalties and coordination effects, but UAVs can still converge on the same attractive region.
+
+3. Partitioned search
+
+Partitioning is the cleanest strategy for reducing overlap, but it may reduce total explored area compared with more flexible strategies.
+
+4. Diffusion
+
+Lower diffusion tends to preserve stronger local gradients and can increase coverage, but often with more revisit redundancy. Higher diffusion smooths the field and may reduce exploration breadth.
+
+5. Heterogeneous environment
+
+The final implementation includes:
+
+high-value zones
+low-value zones
+obstacle barriers
+
+So the grid is not fully open in the final version.
+
+Typical workflow
+
+Recommended order:
+
+bash build_sim.sh
+./check.sh
+./run.sh
+python3 metrics.py
+python3 visualize.py
+Troubleshooting
+JSON parse error
+
+Validate a config file with:
+
+python3 -m json.tool config/base_single_uav.json > /dev/null
+Cadmium “component ID already defined”
+
+This usually means the same cell appears in more than one custom cell_map block in a JSON config. Make sure custom regions do not overlap unless intentionally supported by your setup.
+
+Binary missing
+
+Rebuild with:
+
+bash build_sim.sh
+Submission note
+
+This repository is structured so the project can be:
+
+rebuilt from source
+checked automatically with check.sh
+rerun with run.sh
+analyzed with metrics.py
+visualized with visualize.py
+
+A couple of things in your old README were outdated:
+- “UAV movement is greedy (no memory)” is no longer really true in the simple sense, since you added score-based logic, penalties, and uncertainty.
+- “obstacles are NOT included” is now false, because your final implementation does include obstacle barriers.
+
+Next smartest move is to update `model.md` so it matches the final implementation too.
