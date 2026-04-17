@@ -280,4 +280,3 @@ A couple of things in your old README were outdated:
 - "UAV movement is greedy (no memory)" is no longer really true in the simple sense, since you added score-based logic, penalties, and uncertainty.
 - "obstacles are NOT included" is now false, because your final implementation does include obstacle barriers.
 
-Next smartest move is to update `model.md` so it matches the final implementation too.
