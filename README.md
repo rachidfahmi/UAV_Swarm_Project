@@ -266,17 +266,5 @@ Rebuild with:
 bash build_sim.sh
 ```
 
-## Submission note
 
-This repository is structured so the project can be:
-
-- rebuilt from source
-- checked automatically with check.sh
-- rerun with run.sh
-- analyzed with metrics.py
-- visualized with visualize.py
-
-A couple of things in your old README were outdated:
-- "UAV movement is greedy (no memory)" is no longer really true in the simple sense, since you added score-based logic, penalties, and uncertainty.
-- "obstacles are NOT included" is now false, because your final implementation does include obstacle barriers.
 
