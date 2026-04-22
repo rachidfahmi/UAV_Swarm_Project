@@ -6,3 +6,4 @@ bin/UAVSearch
 *.cmake
 CMakeCache.txt
 CMakeFiles/
+*.py
