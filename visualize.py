@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""visualize.py — generates report figures from simulation logs"""
+"""visualize.py — generates IEEE-ready report figures from simulation logs"""
 
 import os
 import csv
@@ -20,28 +20,49 @@ FIGS = "figures"
 CFG = "config"
 os.makedirs(FIGS, exist_ok=True)
 
-DARK_BG = "#0d0d0d"
-DARK_SURF = "#1a1a2e"
+# -----------------------------
+# IEEE / paper-friendly styling
+# -----------------------------
+FIG_BG = "white"
+AX_BG = "white"
+TEXT = "black"
+GRID = "#d9d9d9"
+SPINE = "#666666"
+
+plt.rcParams.update({
+    "figure.facecolor": FIG_BG,
+    "axes.facecolor": AX_BG,
+    "savefig.facecolor": FIG_BG,
+    "text.color": TEXT,
+    "axes.labelcolor": TEXT,
+    "axes.edgecolor": SPINE,
+    "xtick.color": TEXT,
+    "ytick.color": TEXT,
+    "font.size": 9,
+    "axes.titlesize": 10,
+    "axes.labelsize": 9,
+    "legend.fontsize": 8,
+})
 
 PROB_CMAP = LinearSegmentedColormap.from_list(
     "prob",
-    ["#0d0d1a", "#1a1a3e", "#0f3460", "#533483", "#e94560", "#f5a623"],
+    ["#f7fbff", "#deebf7", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
     N=256
 )
 
 BASE_EXPS = [
-    ("exp0_single",      "Exp0: Single UAV",   "#4fc3f7", "base_single_uav.json", 30, 3),
-    ("exp1_independent", "Exp1: Independent",  "#81c784", "exp1_independent.json", 30, 3),
-    ("exp2_partitioned", "Exp2: Partitioned",  "#ffb74d", "exp2_partitioned.json", 30, 3),
-    ("exp3_shared",      "Exp3: Shared Info",  "#f06292", "exp3_shared.json", 30, 3),
-    ("exp4a_alpha_low",  "Exp4a: α=0.02",      "#ce93d8", "exp4a_alpha_low.json", 30, 3),
-    ("exp4b_alpha_high", "Exp4b: α=0.10",      "#80cbc4", "exp4b_alpha_high.json", 30, 3),
+    ("exp0_single",      "Exp0: Single UAV",   "#1f77b4", "base_single_uav.json", 30, 3),
+    ("exp1_independent", "Exp1: Independent",  "#2ca02c", "exp1_independent.json", 30, 3),
+    ("exp2_partitioned", "Exp2: Partitioned",  "#ff7f0e", "exp2_partitioned.json", 30, 3),
+    ("exp3_shared",      "Exp3: Shared Info",  "#d62728", "exp3_shared.json", 30, 3),
+    ("exp4a_alpha_low",  "Exp4a: α=0.02",      "#9467bd", "exp4a_alpha_low.json", 30, 3),
+    ("exp4b_alpha_high", "Exp4b: α=0.10",      "#17becf", "exp4b_alpha_high.json", 30, 3),
 ]
 
 EXP5_EXPS = [
-    ("exp5_independent_complex", "Exp5a: Indep. Complex",  "#64b5f6", "exp5_independent_complex.json", 50, 5),
-    ("exp5_partitioned_complex", "Exp5b: Part. Complex",   "#ffd54f", "exp5_partitioned_complex.json", 50, 5),
-    ("exp5_shared_complex",      "Exp5c: Shared Complex",  "#ba68c8", "exp5_shared_complex.json", 50, 5),
+    ("exp5_independent_complex", "Exp5a: Indep. Complex",  "#1f77b4", "exp5_independent_complex.json", 50, 5),
+    ("exp5_partitioned_complex", "Exp5b: Part. Complex",   "#ff7f0e", "exp5_partitioned_complex.json", 50, 5),
+    ("exp5_shared_complex",      "Exp5c: Shared Complex",  "#9467bd", "exp5_shared_complex.json", 50, 5),
 ]
 
 ALL_EXPS = BASE_EXPS + EXP5_EXPS
@@ -277,7 +298,7 @@ def render_grid(ax, prob, uav, title, features):
     im = ax.imshow(
         prob,
         cmap=PROB_CMAP,
-        norm=PowerNorm(gamma=1.6, vmin=0, vmax=1),
+        norm=PowerNorm(gamma=1.2, vmin=0, vmax=1),
         origin="upper",
         interpolation="nearest"
     )
@@ -286,85 +307,88 @@ def render_grid(ax, prob, uav, title, features):
         if 0 <= r < grid_size and 0 <= c < grid_size:
             ax.add_patch(
                 plt.Rectangle((c - 0.5, r - 0.5), 1, 1,
-                              facecolor="#0b1220", edgecolor="#0b1220", zorder=2)
+                              facecolor="#4d4d4d", edgecolor="#4d4d4d", zorder=2)
             )
 
     for r, c in features["starts"]:
         if 0 <= r < grid_size and 0 <= c < grid_size:
-            ax.plot(c, r, marker="o", color="#00d084", ms=4.8, mec="white", mew=0.5, zorder=3)
+            ax.plot(c, r, marker="o", color="#2ca02c", ms=4.8, mec="black", mew=0.4, zorder=3)
 
     for r in range(grid_size):
         for c in range(grid_size):
             if uav[r][c] == 100:
-                ax.plot(c, r, "o", color="#00ff88", ms=5, mec="white", mew=0.4, zorder=4)
+                ax.plot(c, r, "o", color="#2ca02c", ms=5, mec="black", mew=0.3, zorder=4)
             elif uav[r][c] == 200:
-                ax.plot(c, r, "*", color="#ffff00", ms=9, mec="white", mew=0.4, zorder=5)
+                ax.plot(c, r, "*", color="#ffbf00", ms=9, mec="black", mew=0.3, zorder=5)
 
     for hr, hc in features["hotspots"]:
         if 0 <= hr < grid_size and 0 <= hc < grid_size:
-            ax.plot(hc, hr, "X", color="#ff4444", ms=7, mec="white", mew=0.5, zorder=6)
+            ax.plot(hc, hr, "X", color="#d62728", ms=7, mec="black", mew=0.3, zorder=6)
 
-    ax.set_title(title, fontsize=8, fontweight="bold", color="white", pad=3)
+    ax.set_title(title, fontsize=8, fontweight="bold", color="black", pad=3)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_facecolor(DARK_SURF)
+    ax.set_facecolor("white")
+    for spine in ax.spines.values():
+        spine.set_color(SPINE)
+        spine.set_linewidth(0.8)
     return im
 
 
 def style_ax(ax):
-    ax.set_facecolor(DARK_SURF)
-    ax.tick_params(colors="white", labelsize=8)
+    ax.set_facecolor("white")
+    ax.tick_params(colors="black", labelsize=8)
     for spine in ax.spines.values():
-        spine.set_color("#444")
-    ax.yaxis.label.set_color("white")
-    ax.xaxis.label.set_color("white")
-    ax.title.set_color("white")
+        spine.set_color(SPINE)
+    ax.yaxis.label.set_color("black")
+    ax.xaxis.label.set_color("black")
+    ax.title.set_color("black")
 
 
 def save_environment_figure():
-    key, _, _, cfg_file, grid_size, _ = BASE_EXPS[3]
+    _, _, _, cfg_file, grid_size, _ = BASE_EXPS[3]
     features = load_config_features(cfg_file)
 
     fig, ax = plt.subplots(figsize=(8, 8))
-    fig.patch.set_facecolor(DARK_BG)
-    ax.set_facecolor(DARK_SURF)
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
 
     ax.imshow(np.zeros((grid_size, grid_size)),
-              cmap=LinearSegmentedColormap.from_list("bg", ["#18345d", "#6fa3ef"]),
+              cmap=LinearSegmentedColormap.from_list("bg", ["#eef5ff", "#cfe2f3"]),
               vmin=0, vmax=1)
 
     for r, c in features["low_zone"]:
-        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#77b255", alpha=0.45, edgecolor="none"))
+        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#c7e9c0", alpha=0.8, edgecolor="none"))
     for r, c in features["high_zone"]:
-        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#f5a623", alpha=0.50, edgecolor="none"))
+        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#fdd49e", alpha=0.85, edgecolor="none"))
     for r, c in features["obstacle_barrier"]:
-        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#111827", alpha=0.95, edgecolor="#111827"))
+        ax.add_patch(plt.Rectangle((c - 0.5, r - 0.5), 1, 1, facecolor="#4d4d4d", alpha=0.95, edgecolor="#4d4d4d"))
 
     for r, c in features["starts"]:
-        ax.plot(c, r, marker="o", color="#00ff88", ms=9, mec="white", mew=0.8)
+        ax.plot(c, r, marker="o", color="#2ca02c", ms=9, mec="black", mew=0.6)
     for r, c in features["hotspots"]:
-        ax.plot(c, r, marker="X", color="#ff4d4d", ms=10, mec="white", mew=0.7)
+        ax.plot(c, r, marker="X", color="#d62728", ms=10, mec="black", mew=0.5)
 
     ax.set_xticks(np.arange(-0.5, grid_size, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, grid_size, 1), minor=True)
-    ax.grid(which="minor", color="white", linewidth=0.35, alpha=0.25)
+    ax.grid(which="minor", color=GRID, linewidth=0.35, alpha=0.8)
     ax.tick_params(which="both", bottom=False, left=False, labelbottom=False, labelleft=False)
     ax.set_xlim(-0.5, grid_size - 0.5)
     ax.set_ylim(grid_size - 0.5, -0.5)
-    ax.set_title("Search Environment and Scenario Features", color="white", fontsize=14, fontweight="bold", pad=12)
+    ax.set_title("Search Environment and Scenario Features", color="black", fontsize=14, fontweight="bold", pad=12)
 
     legend_el = [
-        mpatches.Patch(facecolor="#77b255", alpha=0.45, label="Low-value zone"),
-        mpatches.Patch(facecolor="#f5a623", alpha=0.50, label="High-value zone"),
-        mpatches.Patch(facecolor="#111827", alpha=0.95, label="Obstacle barrier"),
-        plt.Line2D([0], [0], marker="o", color="w", mfc="#00ff88", mec="white", ms=8, label="Starting UAV"),
-        plt.Line2D([0], [0], marker="X", color="w", mfc="#ff4d4d", mec="white", ms=8, label="Hotspot"),
+        mpatches.Patch(facecolor="#c7e9c0", alpha=0.8, label="Low-value zone"),
+        mpatches.Patch(facecolor="#fdd49e", alpha=0.85, label="High-value zone"),
+        mpatches.Patch(facecolor="#4d4d4d", alpha=0.95, label="Obstacle barrier"),
+        plt.Line2D([0], [0], marker="o", color="w", mfc="#2ca02c", mec="black", ms=8, label="Starting UAV"),
+        plt.Line2D([0], [0], marker="X", color="w", mfc="#d62728", mec="black", ms=8, label="Hotspot"),
     ]
-    fig.legend(handles=legend_el, loc="lower center", ncol=5, facecolor=DARK_SURF,
-               edgecolor="#444", labelcolor="white", fontsize=9, bbox_to_anchor=(0.5, 0.02))
+    fig.legend(handles=legend_el, loc="lower center", ncol=5, facecolor="white",
+               edgecolor=SPINE, labelcolor="black", fontsize=9, bbox_to_anchor=(0.5, 0.02))
 
     plt.tight_layout(rect=[0, 0.06, 1, 1])
-    fig.savefig(f"{FIGS}/fig0_environment.png", dpi=160, bbox_inches="tight", facecolor=DARK_BG)
+    fig.savefig(f"{FIGS}/fig0_environment.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
 
@@ -375,16 +399,16 @@ def save_base_family_figures():
 
     print("Fig 1: heatmaps...")
     fig1, axes1 = plt.subplots(2, 3, figsize=(13, 9))
-    fig1.patch.set_facecolor(DARK_BG)
+    fig1.patch.set_facecolor("white")
     im_ref = None
 
     for ax, (key, label, color, cfg_file, grid_size, hotspot_count) in zip(axes1.flat, BASE_EXPS):
-        ax.set_facecolor(DARK_SURF)
+        ax.set_facecolor("white")
         path = os.path.join(OUT, f"{key}_log.csv")
         if not os.path.exists(path):
             ax.text(0.5, 0.5, f"Missing:\n{key}_log.csv", ha="center", va="center",
-                    color="#ff6666", fontsize=8, transform=ax.transAxes)
-            ax.set_title(label, fontsize=8, color="white")
+                    color="black", fontsize=8, transform=ax.transAxes)
+            ax.set_title(label, fontsize=8, color="black")
             ax.set_xticks([])
             ax.set_yticks([])
             continue
@@ -402,23 +426,23 @@ def save_base_family_figures():
         )
 
     cbar = fig1.colorbar(im_ref, ax=axes1, orientation="vertical", fraction=0.018, pad=0.015, shrink=0.85)
-    cbar.set_label("Detection Probability", color="white", fontsize=9)
-    cbar.ax.yaxis.set_tick_params(color="white")
-    plt.setp(cbar.ax.yaxis.get_ticklabels(), color="white", fontsize=7)
+    cbar.set_label("Detection Probability", color="black", fontsize=9)
+    cbar.ax.yaxis.set_tick_params(color="black")
+    plt.setp(cbar.ax.yaxis.get_ticklabels(), color="black", fontsize=7)
 
     legend_el = [
-        mpatches.Patch(facecolor="#f5a623", label="High prob."),
-        mpatches.Patch(facecolor="#0d0d1a", label="Low prob."),
-        plt.Line2D([0], [0], marker="X", color="w", mfc="#ff4444", ms=7, label="Hotspot", ls="None"),
-        plt.Line2D([0], [0], marker="o", color="w", mfc="#00ff88", ms=5, label="UAV active", ls="None"),
-        plt.Line2D([0], [0], marker="*", color="w", mfc="#ffff00", ms=8, label="UAV locked", ls="None"),
+        mpatches.Patch(facecolor="#08519c", label="High prob."),
+        mpatches.Patch(facecolor="#f7fbff", edgecolor=SPINE, label="Low prob."),
+        plt.Line2D([0], [0], marker="X", color="w", mfc="#d62728", mec="black", ms=7, label="Hotspot", ls="None"),
+        plt.Line2D([0], [0], marker="o", color="w", mfc="#2ca02c", mec="black", ms=5, label="UAV active", ls="None"),
+        plt.Line2D([0], [0], marker="*", color="w", mfc="#ffbf00", mec="black", ms=8, label="UAV locked", ls="None"),
     ]
-    fig1.legend(handles=legend_el, loc="lower center", ncol=5, facecolor=DARK_SURF, edgecolor="#444",
-                labelcolor="white", fontsize=8, bbox_to_anchor=(0.47, 0.005))
+    fig1.legend(handles=legend_el, loc="lower center", ncol=5, facecolor="white", edgecolor=SPINE,
+                labelcolor="black", fontsize=8, bbox_to_anchor=(0.47, 0.005))
     fig1.suptitle("Cell-DEVS UAV Search — Final Probability Fields (Base Experiments)",
-                  color="white", fontsize=12, fontweight="bold", y=0.99)
+                  color="black", fontsize=12, fontweight="bold", y=0.99)
     plt.subplots_adjust(left=0.01, right=0.88, top=0.94, bottom=0.07, wspace=0.05, hspace=0.18)
-    fig1.savefig(f"{FIGS}/fig1_heatmaps.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig1.savefig(f"{FIGS}/fig1_heatmaps.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig1)
     print("  -> figures/fig1_heatmaps.png")
 
@@ -428,40 +452,40 @@ def save_base_family_figures():
     x = np.arange(len(keys))
 
     fig2, axes2 = plt.subplots(2, 2, figsize=(12, 8))
-    fig2.patch.set_facecolor(DARK_BG)
+    fig2.patch.set_facecolor("white")
 
     panels = [
-        ([METRICS.get(k, METRIC_DEFAULTS)["cov"] for k in keys], "Coverage (%)", "#4fc3f7", "Coverage: % of grid cells visited"),
-        ([METRICS.get(k, METRIC_DEFAULTS)["found"] for k in keys], "Hotspots found (/3)", "#81c784", "Detection: hotspots found out of 3"),
-        ([METRICS.get(k, METRIC_DEFAULTS)["ovlp"] for k in keys], "Overlap (%)", "#f06292", "Overlap: % of visited cells revisited"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["cov"] for k in keys], "Coverage (%)", "#1f77b4", "Coverage: % of grid cells visited"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["found"] for k in keys], "Hotspots found (/3)", "#2ca02c", "Detection: hotspots found out of 3"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["ovlp"] for k in keys], "Overlap (%)", "#d62728", "Overlap: % of visited cells revisited"),
         ([(METRICS.get(k, METRIC_DEFAULTS)["t"] if METRICS.get(k, METRIC_DEFAULTS)["t"] >= 0 else 0) for k in keys],
-         "First detection time", "#ffb74d", "First detection time"),
+         "First detection time", "#ff7f0e", "First detection time"),
     ]
 
     for ax, (vals, ylabel, color, desc) in zip(axes2.flat, panels):
         style_ax(ax)
-        bars = ax.bar(x, vals, color=color, alpha=0.85, edgecolor="#222", width=0.6, zorder=2)
+        bars = ax.bar(x, vals, color=color, alpha=0.9, edgecolor="black", width=0.6, zorder=2)
         ax.set_xticks(x)
-        ax.set_xticklabels(short, fontsize=7.5, color="white")
+        ax.set_xticklabels(short, fontsize=7.5, color="black")
         ax.set_ylabel(ylabel, fontsize=9)
-        ax.set_title(desc, fontsize=8.5, color="#aaa", pad=4)
-        ax.grid(axis="y", color="#333", linewidth=0.5, zorder=1)
+        ax.set_title(desc, fontsize=8.5, color="black", pad=4)
+        ax.grid(axis="y", color=GRID, linewidth=0.5, zorder=1)
         y_off = (max(vals) * 0.02) if max(vals) > 0 else 0.1
         for bar, val in zip(bars, vals):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + y_off, str(val),
-                    ha="center", va="bottom", color="white", fontsize=7.5, fontweight="bold")
+                    ha="center", va="bottom", color="black", fontsize=7.5, fontweight="bold")
 
-    fig2.suptitle("Experiment Metrics Comparison", color="white", fontsize=12, fontweight="bold")
+    fig2.suptitle("Experiment Metrics Comparison", color="black", fontsize=12, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.96])
-    fig2.savefig(f"{FIGS}/fig2_metrics.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig2.savefig(f"{FIGS}/fig2_metrics.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig2)
     print("  -> figures/fig2_metrics.png")
 
     print("Fig 3: coverage over time...")
     fig3, ax3 = plt.subplots(figsize=(10, 5))
-    fig3.patch.set_facecolor(DARK_BG)
+    fig3.patch.set_facecolor("white")
     style_ax(ax3)
-    ax3.grid(color="#2a2a3e", linewidth=0.7, zorder=1)
+    ax3.grid(color=GRID, linewidth=0.7, zorder=1)
 
     for key, label, color, cfg_file, grid_size, hotspot_count in BASE_EXPS:
         path = os.path.join(OUT, f"{key}_log.csv")
@@ -474,19 +498,19 @@ def save_base_family_figures():
 
     ax3.set_xlabel("Simulation time (steps)", fontsize=10)
     ax3.set_ylabel("Coverage (% of grid)", fontsize=10)
-    ax3.set_title("UAV Search Coverage Over Time", fontsize=11, fontweight="bold", color="white")
-    ax3.legend(facecolor=DARK_SURF, edgecolor="#444", labelcolor="white", fontsize=8.5, loc="upper left")
+    ax3.set_title("UAV Search Coverage Over Time", fontsize=11, fontweight="bold", color="black")
+    ax3.legend(facecolor="white", edgecolor=SPINE, labelcolor="black", fontsize=8.5, loc="upper left")
     ax3.set_xlim(left=0)
     ax3.set_ylim(bottom=0)
     fig3.tight_layout()
-    fig3.savefig(f"{FIGS}/fig3_coverage_time.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig3.savefig(f"{FIGS}/fig3_coverage_time.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig3)
     print("  -> figures/fig3_coverage_time.png")
 
     print("Fig 4: Exp1 vs Exp3 temporal...")
     SNAPS4 = [50, 200, 500, 1000]
     fig4, axes4 = plt.subplots(2, 4, figsize=(14, 7))
-    fig4.patch.set_facecolor(DARK_BG)
+    fig4.patch.set_facecolor("white")
     im4 = None
 
     row_info = [
@@ -503,25 +527,25 @@ def save_base_family_figures():
         for col_i, t_snap in enumerate(SNAPS4):
             prob, uav = snapshot_at(frames, t_snap, grid_size)
             im4 = render_grid(axes4[row_i][col_i], prob, uav, f"{row_label}\nt={t_snap}", features)
-        axes4[row_i][0].set_ylabel(row_label, color="white", fontsize=11, fontweight="bold")
+        axes4[row_i][0].set_ylabel(row_label, color="black", fontsize=11, fontweight="bold")
 
     if im4:
         cb = fig4.colorbar(im4, ax=axes4, orientation="vertical", fraction=0.015, pad=0.01, shrink=0.8)
-        cb.set_label("Detection Probability", color="white", fontsize=8)
-        cb.ax.yaxis.set_tick_params(color="white")
-        plt.setp(cb.ax.yaxis.get_ticklabels(), color="white")
+        cb.set_label("Detection Probability", color="black", fontsize=8)
+        cb.ax.yaxis.set_tick_params(color="black")
+        plt.setp(cb.ax.yaxis.get_ticklabels(), color="black")
 
     fig4.suptitle("Independent vs. Shared Info — Probability Field Evolution",
-                  color="white", fontsize=11, fontweight="bold")
+                  color="black", fontsize=11, fontweight="bold")
     plt.subplots_adjust(left=0.06, right=0.9, top=0.92, bottom=0.03, wspace=0.05, hspace=0.18)
-    fig4.savefig(f"{FIGS}/fig4_exp1_vs_exp3.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig4.savefig(f"{FIGS}/fig4_exp1_vs_exp3.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig4)
     print("  -> figures/fig4_exp1_vs_exp3.png")
 
     print("Fig 5: alpha sensitivity...")
     SNAPS5 = [100, 500, 1000]
     fig5, axes5 = plt.subplots(2, 3, figsize=(11, 7))
-    fig5.patch.set_facecolor(DARK_BG)
+    fig5.patch.set_facecolor("white")
     im5 = None
 
     alpha_rows = [
@@ -541,14 +565,14 @@ def save_base_family_figures():
 
     if im5:
         cb = fig5.colorbar(im5, ax=axes5, orientation="vertical", fraction=0.018, pad=0.01, shrink=0.8)
-        cb.set_label("Detection Probability", color="white", fontsize=8)
-        cb.ax.yaxis.set_tick_params(color="white")
-        plt.setp(cb.ax.yaxis.get_ticklabels(), color="white")
+        cb.set_label("Detection Probability", color="black", fontsize=8)
+        cb.ax.yaxis.set_tick_params(color="black")
+        plt.setp(cb.ax.yaxis.get_ticklabels(), color="black")
 
     fig5.suptitle("Diffusion Rate Sensitivity: α=0.02 vs α=0.10",
-                  color="white", fontsize=11, fontweight="bold")
+                  color="black", fontsize=11, fontweight="bold")
     plt.subplots_adjust(left=0.01, right=0.9, top=0.92, bottom=0.03, wspace=0.05, hspace=0.18)
-    fig5.savefig(f"{FIGS}/fig5_alpha_comparison.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig5.savefig(f"{FIGS}/fig5_alpha_comparison.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig5)
     print("  -> figures/fig5_alpha_comparison.png")
 
@@ -569,34 +593,34 @@ def save_base_family_figures():
         return [m["cov"] / max_cov, m["found"] / 3, 1 - m["ovlp"] / max_ovlp, 1 - ((t_val - 1) / max_t)]
 
     fig6, ax6 = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
-    fig6.patch.set_facecolor(DARK_BG)
-    ax6.set_facecolor(DARK_SURF)
-    ax6.spines["polar"].set_color("#444")
-    ax6.tick_params(colors="white", labelsize=9)
+    fig6.patch.set_facecolor("white")
+    ax6.set_facecolor("white")
+    ax6.spines["polar"].set_color(SPINE)
+    ax6.tick_params(colors="black", labelsize=9)
     ax6.set_xticks(angles[:-1])
-    ax6.set_xticklabels(cats, color="white", fontsize=10)
+    ax6.set_xticklabels(cats, color="black", fontsize=10)
     ax6.set_yticks([0.25, 0.5, 0.75, 1.0])
-    ax6.set_yticklabels(["0.25", "0.5", "0.75", "1.0"], color="#666", fontsize=7)
-    ax6.yaxis.grid(color="#333")
-    ax6.xaxis.grid(color="#444")
+    ax6.set_yticklabels(["0.25", "0.5", "0.75", "1.0"], color="black", fontsize=7)
+    ax6.yaxis.grid(color=GRID)
+    ax6.xaxis.grid(color=GRID)
 
     for key, label, color, cfg_file, grid_size, hotspot_count in BASE_EXPS:
         vals = norm(key) + [norm(key)[0]]
         ax6.plot(angles, vals, color=color, linewidth=2, label=label)
         ax6.fill(angles, vals, color=color, alpha=0.08)
 
-    ax6.legend(loc="upper right", bbox_to_anchor=(1.35, 1.15), facecolor=DARK_SURF,
-               edgecolor="#444", labelcolor="white", fontsize=8.5)
-    ax6.set_title("Multi-Dimensional Strategy Comparison", color="white", fontsize=11, fontweight="bold", pad=20)
-    fig6.savefig(f"{FIGS}/fig6_radar.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    ax6.legend(loc="upper right", bbox_to_anchor=(1.35, 1.15), facecolor="white",
+               edgecolor=SPINE, labelcolor="black", fontsize=8.5)
+    ax6.set_title("Multi-Dimensional Strategy Comparison", color="black", fontsize=11, fontweight="bold", pad=20)
+    fig6.savefig(f"{FIGS}/fig6_radar.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig6)
     print("  -> figures/fig6_radar.png")
 
     print("Fig 7: uncertainty over time...")
     fig7, ax7 = plt.subplots(figsize=(10, 5))
-    fig7.patch.set_facecolor(DARK_BG)
+    fig7.patch.set_facecolor("white")
     style_ax(ax7)
-    ax7.grid(color="#2a2a3e", linewidth=0.7, zorder=1)
+    ax7.grid(color=GRID, linewidth=0.7, zorder=1)
 
     for key, label, color, cfg_file, grid_size, hotspot_count in BASE_EXPS:
         path = os.path.join(OUT, f"{key}_log.csv")
@@ -609,11 +633,11 @@ def save_base_family_figures():
 
     ax7.set_xlabel("Simulation time (steps)", fontsize=10)
     ax7.set_ylabel("Average grid uncertainty", fontsize=10)
-    ax7.set_title("Global Uncertainty Over Time", fontsize=11, fontweight="bold", color="white")
-    ax7.legend(facecolor=DARK_SURF, edgecolor="#444", labelcolor="white", fontsize=8.5, loc="upper right")
+    ax7.set_title("Global Uncertainty Over Time", fontsize=11, fontweight="bold", color="black")
+    ax7.legend(facecolor="white", edgecolor=SPINE, labelcolor="black", fontsize=8.5, loc="upper right")
     ax7.set_xlim(left=0)
     fig7.tight_layout()
-    fig7.savefig(f"{FIGS}/fig7_uncertainty_time.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig7.savefig(f"{FIGS}/fig7_uncertainty_time.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig7)
     print("  -> figures/fig7_uncertainty_time.png")
 
@@ -621,16 +645,16 @@ def save_base_family_figures():
 def save_exp5_figures():
     print("Fig 8: Exp5 heatmaps...")
     fig8, axes8 = plt.subplots(1, 3, figsize=(15, 5.8))
-    fig8.patch.set_facecolor(DARK_BG)
+    fig8.patch.set_facecolor("white")
     im_ref = None
 
     for ax, (key, label, color, cfg_file, grid_size, hotspot_count) in zip(axes8.flat, EXP5_EXPS):
-        ax.set_facecolor(DARK_SURF)
+        ax.set_facecolor("white")
         path = os.path.join(OUT, f"{key}_log.csv")
         if not os.path.exists(path):
             ax.text(0.5, 0.5, f"Missing:\n{key}_log.csv", ha="center", va="center",
-                    color="#ff6666", fontsize=8, transform=ax.transAxes)
-            ax.set_title(label, fontsize=8, color="white")
+                    color="black", fontsize=8, transform=ax.transAxes)
+            ax.set_title(label, fontsize=8, color="black")
             ax.set_xticks([])
             ax.set_yticks([])
             continue
@@ -648,57 +672,57 @@ def save_exp5_figures():
         )
 
     cbar = fig8.colorbar(im_ref, ax=axes8, orientation="vertical", fraction=0.020, pad=0.02, shrink=0.85)
-    cbar.set_label("Detection Probability", color="white", fontsize=9)
-    cbar.ax.yaxis.set_tick_params(color="white")
-    plt.setp(cbar.ax.yaxis.get_ticklabels(), color="white", fontsize=7)
+    cbar.set_label("Detection Probability", color="black", fontsize=9)
+    cbar.ax.yaxis.set_tick_params(color="black")
+    plt.setp(cbar.ax.yaxis.get_ticklabels(), color="black", fontsize=7)
 
     fig8.suptitle("Exp5 Complex Scenario — Final Probability Fields",
-                  color="white", fontsize=12, fontweight="bold", y=0.98)
+                  color="black", fontsize=12, fontweight="bold", y=0.98)
     plt.subplots_adjust(left=0.02, right=0.90, top=0.90, bottom=0.05, wspace=0.08)
-    fig8.savefig(f"{FIGS}/fig8_exp5_heatmaps.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig8.savefig(f"{FIGS}/fig8_exp5_heatmaps.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig8)
     print("  -> figures/fig8_exp5_heatmaps.png")
 
     print("Fig 9: Exp5 metrics...")
     fig9, axes9 = plt.subplots(2, 2, figsize=(10, 7))
-    fig9.patch.set_facecolor(DARK_BG)
+    fig9.patch.set_facecolor("white")
 
     keys = [k for k, _, _, _, _, _ in EXP5_EXPS]
     short = ["Exp5a\nIndep.", "Exp5b\nPart.", "Exp5c\nShared"]
     x = np.arange(len(keys))
 
     panels = [
-        ([METRICS.get(k, METRIC_DEFAULTS)["cov"] for k in keys], "Coverage (%)", "#64b5f6", "Coverage"),
-        ([METRICS.get(k, METRIC_DEFAULTS)["found"] for k in keys], "Hotspots found (/5)", "#81c784", "Detection"),
-        ([METRICS.get(k, METRIC_DEFAULTS)["ovlp"] for k in keys], "Overlap (%)", "#f06292", "Overlap"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["cov"] for k in keys], "Coverage (%)", "#1f77b4", "Coverage"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["found"] for k in keys], "Hotspots found (/5)", "#2ca02c", "Detection"),
+        ([METRICS.get(k, METRIC_DEFAULTS)["ovlp"] for k in keys], "Overlap (%)", "#d62728", "Overlap"),
         ([(METRICS.get(k, METRIC_DEFAULTS)["t"] if METRICS.get(k, METRIC_DEFAULTS)["t"] >= 0 else 0) for k in keys],
-         "First detection time", "#ffb74d", "First detection time"),
+         "First detection time", "#ff7f0e", "First detection time"),
     ]
 
     for ax, (vals, ylabel, color, desc) in zip(axes9.flat, panels):
         style_ax(ax)
-        bars = ax.bar(x, vals, color=color, alpha=0.85, edgecolor="#222", width=0.6, zorder=2)
+        bars = ax.bar(x, vals, color=color, alpha=0.9, edgecolor="black", width=0.6, zorder=2)
         ax.set_xticks(x)
-        ax.set_xticklabels(short, fontsize=8, color="white")
+        ax.set_xticklabels(short, fontsize=8, color="black")
         ax.set_ylabel(ylabel, fontsize=9)
-        ax.set_title(desc, fontsize=9, color="#aaa", pad=4)
-        ax.grid(axis="y", color="#333", linewidth=0.5, zorder=1)
+        ax.set_title(desc, fontsize=9, color="black", pad=4)
+        ax.grid(axis="y", color=GRID, linewidth=0.5, zorder=1)
         y_off = (max(vals) * 0.02) if max(vals) > 0 else 0.1
         for bar, val in zip(bars, vals):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + y_off, str(val),
-                    ha="center", va="bottom", color="white", fontsize=8, fontweight="bold")
+                    ha="center", va="bottom", color="black", fontsize=8, fontweight="bold")
 
-    fig9.suptitle("Exp5 Complex Scenario Metrics", color="white", fontsize=12, fontweight="bold")
+    fig9.suptitle("Exp5 Complex Scenario Metrics", color="black", fontsize=12, fontweight="bold")
     plt.tight_layout(rect=[0, 0, 1, 0.96])
-    fig9.savefig(f"{FIGS}/fig9_exp5_metrics.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig9.savefig(f"{FIGS}/fig9_exp5_metrics.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig9)
     print("  -> figures/fig9_exp5_metrics.png")
 
     print("Fig 10: Exp5 coverage over time...")
     fig10, ax10 = plt.subplots(figsize=(10, 5))
-    fig10.patch.set_facecolor(DARK_BG)
+    fig10.patch.set_facecolor("white")
     style_ax(ax10)
-    ax10.grid(color="#2a2a3e", linewidth=0.7, zorder=1)
+    ax10.grid(color=GRID, linewidth=0.7, zorder=1)
 
     for key, label, color, cfg_file, grid_size, hotspot_count in EXP5_EXPS:
         path = os.path.join(OUT, f"{key}_log.csv")
@@ -711,20 +735,20 @@ def save_exp5_figures():
 
     ax10.set_xlabel("Simulation time (steps)", fontsize=10)
     ax10.set_ylabel("Coverage (% of grid)", fontsize=10)
-    ax10.set_title("Exp5 Complex Scenario — Coverage Over Time", fontsize=11, fontweight="bold", color="white")
-    ax10.legend(facecolor=DARK_SURF, edgecolor="#444", labelcolor="white", fontsize=8.5, loc="upper left")
+    ax10.set_title("Exp5 Complex Scenario — Coverage Over Time", fontsize=11, fontweight="bold", color="black")
+    ax10.legend(facecolor="white", edgecolor=SPINE, labelcolor="black", fontsize=8.5, loc="upper left")
     ax10.set_xlim(left=0)
     ax10.set_ylim(bottom=0)
     fig10.tight_layout()
-    fig10.savefig(f"{FIGS}/fig10_exp5_coverage_time.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig10.savefig(f"{FIGS}/fig10_exp5_coverage_time.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig10)
     print("  -> figures/fig10_exp5_coverage_time.png")
 
     print("Fig 11: Exp5 uncertainty over time...")
     fig11, ax11 = plt.subplots(figsize=(10, 5))
-    fig11.patch.set_facecolor(DARK_BG)
+    fig11.patch.set_facecolor("white")
     style_ax(ax11)
-    ax11.grid(color="#2a2a3e", linewidth=0.7, zorder=1)
+    ax11.grid(color=GRID, linewidth=0.7, zorder=1)
 
     for key, label, color, cfg_file, grid_size, hotspot_count in EXP5_EXPS:
         path = os.path.join(OUT, f"{key}_log.csv")
@@ -737,11 +761,11 @@ def save_exp5_figures():
 
     ax11.set_xlabel("Simulation time (steps)", fontsize=10)
     ax11.set_ylabel("Average grid uncertainty", fontsize=10)
-    ax11.set_title("Exp5 Complex Scenario — Global Uncertainty Over Time", fontsize=11, fontweight="bold", color="white")
-    ax11.legend(facecolor=DARK_SURF, edgecolor="#444", labelcolor="white", fontsize=8.5, loc="upper right")
+    ax11.set_title("Exp5 Complex Scenario — Global Uncertainty Over Time", fontsize=11, fontweight="bold", color="black")
+    ax11.legend(facecolor="white", edgecolor=SPINE, labelcolor="black", fontsize=8.5, loc="upper right")
     ax11.set_xlim(left=0)
     fig11.tight_layout()
-    fig11.savefig(f"{FIGS}/fig11_exp5_uncertainty_time.png", dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+    fig11.savefig(f"{FIGS}/fig11_exp5_uncertainty_time.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig11)
     print("  -> figures/fig11_exp5_uncertainty_time.png")
 
@@ -751,15 +775,15 @@ if __name__ == "__main__":
     save_exp5_figures()
 
     print("\nDone. Figures saved to figures/")
-    print("  fig0_environment.png          — base scenario zones, barriers, starts, hotspots")
-    print("  fig1_heatmaps.png             — base family final state heatmaps")
-    print("  fig2_metrics.png              — base family bar charts")
-    print("  fig3_coverage_time.png        — base family coverage growth")
-    print("  fig4_exp1_vs_exp3.png         — independent vs shared snapshots")
-    print("  fig5_alpha_comparison.png     — alpha sensitivity snapshots")
-    print("  fig6_radar.png                — base family radar summary")
-    print("  fig7_uncertainty_time.png     — base family uncertainty over time")
-    print("  fig8_exp5_heatmaps.png        — Exp5 complex final state heatmaps")
-    print("  fig9_exp5_metrics.png         — Exp5 complex metrics")
-    print("  fig10_exp5_coverage_time.png  — Exp5 complex coverage growth")
+    print("  fig0_environment.png            — base scenario zones, barriers, starts, hotspots")
+    print("  fig1_heatmaps.png               — base family final state heatmaps")
+    print("  fig2_metrics.png                — base family bar charts")
+    print("  fig3_coverage_time.png          — base family coverage growth")
+    print("  fig4_exp1_vs_exp3.png           — independent vs shared snapshots")
+    print("  fig5_alpha_comparison.png       — alpha sensitivity snapshots")
+    print("  fig6_radar.png                  — base family radar summary")
+    print("  fig7_uncertainty_time.png       — base family uncertainty over time")
+    print("  fig8_exp5_heatmaps.png          — Exp5 complex final state heatmaps")
+    print("  fig9_exp5_metrics.png           — Exp5 complex metrics")
+    print("  fig10_exp5_coverage_time.png    — Exp5 complex coverage growth")
     print("  fig11_exp5_uncertainty_time.png — Exp5 complex uncertainty over time")
