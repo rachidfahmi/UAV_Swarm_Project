@@ -26,6 +26,9 @@ EXPERIMENTS=(
     "exp3_shared:exp3_shared"
     "exp4a_alpha_low:exp4a_alpha_low"
     "exp4b_alpha_high:exp4b_alpha_high"
+    "exp5_independent_complex:exp5_independent_complex"
+    "exp5_partitioned_complex:exp5_partitioned_complex"
+    "exp5_shared_complex:exp5_shared_complex"
 )
 
 echo ""

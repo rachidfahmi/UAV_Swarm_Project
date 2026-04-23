@@ -6,4 +6,8 @@ bin/UAVSearch
 *.cmake
 CMakeCache.txt
 CMakeFiles/
-*.py
+
+
+# large simulation outputs
+output/*.csv
+videos/*.mp4
