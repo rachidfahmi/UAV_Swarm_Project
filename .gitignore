@@ -10,4 +10,4 @@ CMakeFiles/
 
 # large simulation outputs
 output/*.csv
-videos/*.mp4
+
