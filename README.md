@@ -140,14 +140,17 @@ The script runs all configured experiments and stores logs in output/.
 
 ## Current experiment set
 
-| Config file | Meaning |
-|-------------|---------|
-| base_single_uav.json | Single-UAV baseline |
-| exp1_independent.json | Multi-UAV independent search |
-| exp2_partitioned.json | Multi-UAV partitioned search |
-| exp3_shared.json | Multi-UAV shared-information search |
-| exp4a_alpha_low.json | Low diffusion sensitivity (alpha = 0.02) |
-| exp4b_alpha_high.json | High diffusion sensitivity (alpha = 0.10) |
+| Config file                | Meaning |
+|---------------------------|--------|
+| base_single_uav.json      | Single-UAV baseline |
+| exp1_independent.json     | Multi-UAV independent search |
+| exp2_partitioned.json     | Multi-UAV partitioned search |
+| exp3_shared.json          | Multi-UAV shared-information search |
+| exp4a_alpha_low.json      | Low diffusion sensitivity (alpha = 0.02) |
+| exp4b_alpha_high.json     | High diffusion sensitivity (alpha = 0.10) |
+| exp5a_independent_complex.json | Complex scenario (50×50): independent search |
+| exp5b_partitioned_complex.json | Complex scenario (50×50): partitioned search |
+| exp5c_shared_complex.json | Complex scenario (50×50): shared-information search |
 
 ## Stress scenarios
 
@@ -187,17 +190,22 @@ This produces figures in figures/.
 
 ## Main generated figures
 
-| Figure | Meaning |
-|--------|---------|
-| fig0_environment.png | Environment layout: zones, obstacles, starts, hotspots |
-| fig1_heatmaps.png | Final probability fields for all experiments |
-| fig2_metrics.png | Metrics comparison across experiments |
-| fig3_coverage_time.png | Coverage growth over time |
-| fig4_exp1_vs_exp3.png | Temporal comparison: independent vs shared |
-| fig5_alpha_comparison.png | Diffusion sensitivity comparison |
-| fig6_radar.png | Multi-metric summary view |
-| fig7_entropy_time.png | Uncertainty / entropy evolution over time |
+## Figures
 
+| Figure | Meaning |
+|--------|--------|
+| fig0_environment.png | Environment layout: zones, obstacles, UAV starts, and hotspots |
+| fig1_heatmaps.png | Final probability fields for base experiments (Exp0–Exp4b) |
+| fig2_metrics.png | Quantitative metrics comparison across base experiments |
+| fig3_coverage_time.png | Coverage growth over time for base experiments |
+| fig4_exp1_vs_exp3.png | Temporal comparison: independent vs shared-information search |
+| fig5_alpha_comparison.png | Diffusion sensitivity comparison (low vs high α) |
+| fig6_radar.png | Multi-metric radar summary (coverage, detection, efficiency, speed) |
+| fig7_entropy_time.png | Uncertainty (entropy) evolution over time for base experiments |
+| fig8_exp5_heatmaps.png | Final probability fields for complex scenario (Exp5a–Exp5c) |
+| fig9_exp5_coverage.png | Coverage over time for complex scenario (Exp5) |
+| fig10_exp5_metrics.png | Quantitative metrics comparison for Exp5 scenarios |
+| fig11_exp5_entropy.png | Uncertainty evolution over time for Exp5 scenarios |
 ## Simulation videos
 
 Simulation videos are included to demonstrate the evolution of UAV search behavior under different coordination strategies.
