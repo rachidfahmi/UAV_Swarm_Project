@@ -302,7 +302,7 @@ use a Python virtual environment instead:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install matplotlib numpy pandas
+pip install matplotlib numpy pandas```
 
 Then run the visualization script, if it is included:
 
@@ -312,8 +312,5 @@ Each time you open a new terminal, activate the environment again:
 
 source venv/bin/activate
 
-The important part is this line after `pip install matplotlib numpy pandas`:
-
-```markdown
 
 
