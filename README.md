@@ -198,6 +198,19 @@ This produces figures in figures/.
 | fig6_radar.png | Multi-metric summary view |
 | fig7_entropy_time.png | Uncertainty / entropy evolution over time |
 
+## Simulation videos
+
+Simulation videos are included to demonstrate the evolution of UAV search behavior under different coordination strategies.
+
+These videos illustrate:
+
+- UAV movement over time
+- probability-field evolution
+- effects of coordination strategies and diffusion
+- stress-scenario behavior, if applicable
+
+The videos complement the static figures and metrics by showing the spatiotemporal behavior of the model.
+
 ## Output files
 
 After successful runs:
