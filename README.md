@@ -74,6 +74,7 @@ You need:
 - g++
 - Python 3
 - Cadmium available in your include path / local setup
+- Python packages for optional visualization scripts: `matplotlib`, `numpy`, `pandas`
 
 ## Build
 
@@ -147,6 +148,15 @@ The script runs all configured experiments and stores logs in output/.
 | exp3_shared.json | Multi-UAV shared-information search |
 | exp4a_alpha_low.json | Low diffusion sensitivity (alpha = 0.02) |
 | exp4b_alpha_high.json | High diffusion sensitivity (alpha = 0.10) |
+
+## Stress scenarios
+
+Additional stress scenarios are included to test the robustness of the UAV search logic under more challenging conditions.
+
+Run a stress scenario the same way as the other configuration files:
+
+```bash
+./bin/UAVSearch config/STRESS_CONFIG_NAME.json 1000
 
 ## Metrics
 
