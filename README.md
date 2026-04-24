@@ -160,7 +160,7 @@ Run a stress scenario the same way as the other configuration files:
 
 ```bash
 ./bin/UAVSearch config/STRESS_CONFIG_NAME.json 1000
-
+```
 ## Metrics
 
 After running experiments, compute metrics with:
