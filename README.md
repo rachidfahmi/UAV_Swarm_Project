@@ -288,6 +288,28 @@ Rebuild with:
 ```bash
 bash build_sim.sh
 ```
+### Python package installation in restricted environments
+
+On some systems, such as university servers, installing Python packages using `sudo` or `pip install --user` may fail because the Python environment is restricted or externally managed.
+
+If you encounter errors such as:
+
+- `ModuleNotFoundError: No module named 'matplotlib'`
+- `externally-managed-environment`
+
+use a Python virtual environment instead:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install matplotlib numpy pandas
+Then run the visualization script, if it is included:
+
+python visualize.py
+
+Each time you open a new terminal, activate the environment again:
+
+source venv/bin/activate
 
 
 
