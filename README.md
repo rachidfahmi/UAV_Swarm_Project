@@ -312,5 +312,3 @@ Each time you open a new terminal, activate the environment again:
 
 source venv/bin/activate
 
-
-
