@@ -151,7 +151,7 @@ The script runs all configured experiments and stores logs in output/.
 | exp5a_independent_complex.json | Complex scenario (50×50): independent search |
 | exp5b_partitioned_complex.json | Complex scenario (50×50): partitioned search |
 | exp5c_shared_complex.json | Complex scenario (50×50): shared-information search |
-
+The Exp5 scenarios extend the model to a larger and more complex environment (50×50 grid, 4 UAVs, 5 hotspots) to evaluate scalability and robustness.
 ## Stress scenarios
 
 Additional stress scenarios are included to test the robustness of the UAV search logic under more challenging conditions.
