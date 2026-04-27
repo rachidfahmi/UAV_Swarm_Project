@@ -81,7 +81,7 @@ You need:
 Build the simulator with:
 
 ```bash
-bash build_sim.sh
+source build_sim.sh
 ```
 
 This generates the executable:
