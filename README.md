@@ -1,4 +1,4 @@
-# UAV Swarm Project
+# Multi-UAV Search and Coordination using Advanced Cell-DEVS Models
 
 A Cadmium / Cell-DEVS simulation of cooperative UAV search on a 30×30 grid with multiple coordination strategies, probability-field diffusion, heterogeneous zones, uncertainty-guided search, and post-processing scripts for metrics and figures.
 
