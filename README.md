@@ -2,54 +2,6 @@
 
 A Cadmium / Cell-DEVS simulation of cooperative UAV search on a 30×30 grid with multiple coordination strategies, probability-field diffusion, heterogeneous zones, uncertainty-guided search, and post-processing scripts for metrics and figures.
 
-## Project summary
-
-This project models a multi-UAV search process using a Cell-DEVS grid in Cadmium.
-
-The environment is a 30×30 discrete grid. Each cell stores a state with:
-- `prob`: target-detection probability or belief value in `[0,1]`
-- `uav`: UAV occupancy / movement code
-- `zone`: environment type
-- `uncertainty`: local search uncertainty
-- `visit_penalty`: revisit discouragement
-- `shared_penalty`: shared coordination discouragement
-
-The model includes:
-- probability diffusion
-- probability + distance decision scoring
-- heterogeneous regions
-- obstacle barriers
-- uncertainty-aware search
-- multiple coordination strategies
-
-## Model features
-
-### Search behavior
-UAVs move using a score-based local rule rather than simple highest-probability greedy motion.
-
-The score combines:
-- local probability
-- local uncertainty
-- travel distance
-- revisit penalty
-- shared penalty
-- zone preference
-
-### Environment structure
-The environment is not uniform. It includes:
-- high-value zones
-- low-value zones
-- obstacle cells
-
-Obstacle cells block UAV occupancy and suppress probability there.
-
-### Coordination logic
-Different experiment files enable different coordination setups:
-- single-UAV baseline
-- multi-UAV independent search
-- partitioned search
-- shared-information search
-- diffusion sensitivity analysis
 
 ## Repository structure
 
@@ -234,7 +186,54 @@ Typical logs:
 - exp3_shared_log.csv
 - exp4a_alpha_low_log.csv
 - exp4b_alpha_high_log.csv
+## Project summary
 
+This project models a multi-UAV search process using a Cell-DEVS grid in Cadmium.
+
+The environment is a 30×30 discrete grid. Each cell stores a state with:
+- `prob`: target-detection probability or belief value in `[0,1]`
+- `uav`: UAV occupancy / movement code
+- `zone`: environment type
+- `uncertainty`: local search uncertainty
+- `visit_penalty`: revisit discouragement
+- `shared_penalty`: shared coordination discouragement
+
+The model includes:
+- probability diffusion
+- probability + distance decision scoring
+- heterogeneous regions
+- obstacle barriers
+- uncertainty-aware search
+- multiple coordination strategies
+
+## Model features
+
+### Search behavior
+UAVs move using a score-based local rule rather than simple highest-probability greedy motion.
+
+The score combines:
+- local probability
+- local uncertainty
+- travel distance
+- revisit penalty
+- shared penalty
+- zone preference
+
+### Environment structure
+The environment is not uniform. It includes:
+- high-value zones
+- low-value zones
+- obstacle cells
+
+Obstacle cells block UAV occupancy and suppress probability there.
+
+### Coordination logic
+Different experiment files enable different coordination setups:
+- single-UAV baseline
+- multi-UAV independent search
+- partitioned search
+- shared-information search
+- diffusion sensitivity analysis
 ## Important implementation notes
 
 1. **Hotspots**
