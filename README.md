@@ -106,12 +106,20 @@ The script runs all configured experiments and stores logs in output/.
 The Exp5 scenarios extend the model to a larger and more complex environment (50×50 grid, 4 UAVs, 5 hotspots) to evaluate scalability and robustness.
 ## Stress scenarios
 
-Additional stress scenarios are included to test the robustness of the UAV search logic under more challenging conditions.
+## Stress scenarios
 
-Run a stress scenario the same way as the other configuration files:
+Additional large-scale stress scenarios are provided by the Exp5 configuration files:
+
+- `exp5a_independent_complex.json`
+- `exp5b_partitioned_complex.json`
+- `exp5c_shared_complex.json`
+
+These scenarios extend the search space to a 50×50 grid, increase the number of UAVs to four, and use five pinned hotspots in order to evaluate robustness, scalability, and coordination behavior under more demanding conditions.
+
+They can be executed using:
 
 ```bash
-./bin/UAVSearch config/STRESS_CONFIG_NAME.json 1000
+./bin/UAVSearch config/EXP5_CONFIG_NAME.json 1000
 ```
 ## Metrics
 
@@ -142,8 +150,6 @@ This produces figures in figures/.
 
 ## Main generated figures
 
-## Figures
-
 | Figure | Meaning |
 |--------|--------|
 | fig0_environment.png | Environment layout: zones, obstacles, UAV starts, and hotspots |
@@ -153,23 +159,39 @@ This produces figures in figures/.
 | fig4_exp1_vs_exp3.png | Temporal comparison: independent vs shared-information search |
 | fig5_alpha_comparison.png | Diffusion sensitivity comparison (low vs high α) |
 | fig6_radar.png | Multi-metric radar summary (coverage, detection, efficiency, speed) |
-| fig7_entropy_time.png | Uncertainty (entropy) evolution over time for base experiments |
+| fig7_uncertainty_time.png | Uncertainty evolution over time for base experiments |
 | fig8_exp5_heatmaps.png | Final probability fields for complex scenario (Exp5a–Exp5c) |
-| fig9_exp5_coverage.png | Coverage over time for complex scenario (Exp5) |
+| fig9_exp5_coverage_time.png | Coverage over time for complex scenario (Exp5) |
 | fig10_exp5_metrics.png | Quantitative metrics comparison for Exp5 scenarios |
-| fig11_exp5_entropy.png | Uncertainty evolution over time for Exp5 scenarios |
-## Simulation videos
+| fig11_exp5_uncertainty_time.png | Uncertainty evolution over time for Exp5 scenarios |
 
-Simulation videos are included to demonstrate the evolution of UAV search behavior under different coordination strategies.
+## Typical workflow
 
-These videos illustrate:
+Recommended order:
 
-- UAV movement over time
-- probability-field evolution
-- effects of coordination strategies and diffusion
-- stress-scenario behavior, if applicable
+```bash
+bash build_sim.sh
+./check.sh
+./run.sh
+python3 metrics.py
+python3 visualize.py
+```
+## Expected Outputs
 
-The videos complement the static figures and metrics by showing the spatiotemporal behavior of the model.
+After running `./run.sh`, the repository should contain:
+
+- `output/*_log.csv` experiment logs
+- updated `output/uav_log.csv` from the last executed scenario
+
+After running `python3 visualize.py`, the repository should contain:
+
+- `figures/*.png` generated report figures
+
+## Simulation Videos
+
+Pre-generated simulation videos are included in the repository to illustrate the temporal evolution of UAV movement and probability-field diffusion under selected coordination strategies.
+
+These videos complement the CSV logs and static figures by providing a direct visual interpretation of swarm behavior during execution.
 
 ## Output files
 
@@ -240,19 +262,7 @@ Different experiment files enable different coordination setups:
 
    Some hotspot cells are configured as pinned sources to preserve strong signal structure during experiments.
 
-2. **Shared information**
-
-   Shared-information search does not guarantee zero overlap. It reduces ignorance through shared penalties and coordination effects, but UAVs can still converge on the same attractive region.
-
-3. **Partitioned search**
-
-   Partitioning is the cleanest strategy for reducing overlap, but it may reduce total explored area compared with more flexible strategies.
-
-4. **Diffusion**
-
-   Lower diffusion tends to preserve stronger local gradients and can increase coverage, but often with more revisit redundancy. Higher diffusion smooths the field and may reduce exploration breadth.
-
-5. **Heterogeneous environment**
+2. **Heterogeneous environment**
 
    The final implementation includes:
 
@@ -262,17 +272,6 @@ Different experiment files enable different coordination setups:
 
    So the grid is not fully open in the final version.
 
-## Typical workflow
-
-Recommended order:
-
-```bash
-bash build_sim.sh
-./check.sh
-./run.sh
-python3 metrics.py
-python3 visualize.py
-```
 
 ## Troubleshooting
 
