@@ -10,6 +10,7 @@ A Cadmium / Cell-DEVS simulation of cooperative UAV search on a 30×30 grid with
 - `config/` — JSON scenario files
 - `output/` — generated simulation logs
 - `figures/` — generated figures for analysis/report
+- `videos/` — pre-generated simulation videos for all main experiments
 - `build_sim.sh` — build script
 - `check.sh` — validation script
 - `run.sh` — batch experiment runner
@@ -189,21 +190,21 @@ After running `python3 visualize.py`, the repository should contain:
 
 ## Simulation Videos
 
-Pre-generated simulation videos are included in the videos/ directory to illustrate the temporal evolution of UAV movement and probability-field diffusion under the main coordination strategies.
+Pre-generated simulation videos are included in the videos/ directory to illustrate the temporal evolution of UAV movement and probability-field diffusion under the different coordination strategies.
 
 Included examples:
 
-exp0_single_v2.mp4
-exp1_independent_v2.mp4
-exp2_partitioned_v2.mp4
-exp3_shared_v2.mp4
-exp4a_alpha_low_v2.mp4
-exp4b_alpha_high_v2.mp4
-exp5_independent_complex_v2.mp4
-exp5_partitioned_complex_v2.mp4
-exp5_shared_complex_v2.mp4
+-exp0_single_v2.mp4
+-exp1_independent_v2.mp4
+-exp2_partitioned_v2.mp4
+-exp3_shared_v2.mp4
+-exp4a_alpha_low_v2.mp4
+-exp4b_alpha_high_v2.mp4
+-exp5_independent_complex_v2.mp4
+-exp5_partitioned_complex_v2.mp4
+-exp5_shared_complex_v2.mp4
 
-Additional comparison videos are also included for alpha sensitivity and strategy-to-strategy comparisons.
+Additional comparison videos are also provided, including alpha sensitivity and strategy-to-strategy comparisons.
 
 These videos complement the CSV logs and static figures by providing a direct visual interpretation of swarm coordination behavior during execution.
 
