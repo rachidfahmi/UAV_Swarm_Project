@@ -194,15 +194,15 @@ Pre-generated simulation videos are included in the videos/ directory to illustr
 
 Included examples:
 
-- `exp0_single_v2.mp4
-- `exp1_independent_v2.mp4
-- `exp2_partitioned_v2.mp4
-- `exp3_shared_v2.mp4
-- `exp4a_alpha_low_v2.mp4
-- `exp4b_alpha_high_v2.mp4
-- `exp5_independent_complex_v2.mp4
-- `exp5_partitioned_complex_v2.mp4
-- `exp5_shared_complex_v2.mp4
+- exp0_single_v2.mp4
+- exp1_independent_v2.mp4
+- exp2_partitioned_v2.mp4
+- exp3_shared_v2.mp4
+- exp4a_alpha_low_v2.mp4
+- exp4b_alpha_high_v2.mp4
+- exp5_independent_complex_v2.mp4
+- exp5_partitioned_complex_v2.mp4
+- exp5_shared_complex_v2.mp4
 
 Additional comparison videos are also provided, including alpha sensitivity and strategy-to-strategy comparisons.
 
