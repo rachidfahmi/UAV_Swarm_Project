@@ -33,7 +33,7 @@ You need:
 Build the simulator with:
 
 ```bash
-source build_sim.sh
+bash build_sim.sh
 ```
 
 This generates the executable:
@@ -103,8 +103,8 @@ The script runs all configured experiments and stores logs in output/.
 | exp5a_independent_complex.json | Complex scenario (50×50): independent search |
 | exp5b_partitioned_complex.json | Complex scenario (50×50): partitioned search |
 | exp5c_shared_complex.json | Complex scenario (50×50): shared-information search |
+
 The Exp5 scenarios extend the model to a larger and more complex environment (50×50 grid, 4 UAVs, 5 hotspots) to evaluate scalability and robustness.
-## Stress scenarios
 
 ## Stress scenarios
 
