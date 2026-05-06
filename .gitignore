@@ -8,3 +8,9 @@ __pycache__/
 
 # Large generated simulation logs
 output/exp5_*_complex_log.csv
+
+# Generated simulation logs
+output/*.csv
+
+# Generated simulation logs
+output/*.csv
