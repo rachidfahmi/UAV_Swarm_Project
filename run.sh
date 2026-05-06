@@ -1,23 +1,29 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-BIN=./bin/UAVSearch
-CFG=config
-OUT=output
-SIM_TIME=${1:-1000}
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+BIN="$ROOT_DIR/bin/UAVSearch"
+CFG="$ROOT_DIR/config"
+OUT="$ROOT_DIR/output"
+SIM_TIME="${1:-1000}"
 
 mkdir -p "$OUT"
 
+if [ ! -x "$BIN" ]; then
+    echo "Executable not found. Building first..."
+    source "$ROOT_DIR/build_sim.sh"
+fi
+
 check_file() {
     if [ ! -f "$1" ]; then
-        echo "❌ Missing file: $1"
+        echo "Missing file: $1"
         exit 1
     fi
 }
 
-echo "=== Checking setup ==="
 check_file "$BIN"
-check_file "metrics.py"
+check_file "$ROOT_DIR/metrics.py"
 
 EXPERIMENTS=(
     "base_single_uav:exp0_single"
@@ -31,24 +37,27 @@ EXPERIMENTS=(
     "exp5_shared_complex:exp5_shared_complex"
 )
 
-echo ""
-echo "=== Running simulations (T=$SIM_TIME) ==="
+echo "Running simulations with T=$SIM_TIME"
 
 for entry in "${EXPERIMENTS[@]}"; do
-    IFS=":" read cfg name <<< "$entry"
+    IFS=":" read -r cfg name <<< "$entry"
 
     check_file "$CFG/$cfg.json"
 
-    echo "▶ Running $name..."
-    $BIN "$CFG/$cfg.json" "$SIM_TIME"
+    echo "Running $name..."
+    "$BIN" "$CFG/$cfg.json" "$SIM_TIME"
+
+    if [ ! -f "$OUT/uav_log.csv" ]; then
+        echo "Expected output file was not generated: $OUT/uav_log.csv"
+        exit 1
+    fi
 
     mv "$OUT/uav_log.csv" "$OUT/${name}_log.csv"
-    echo "  → saved: $OUT/${name}_log.csv"
+    echo "saved: $OUT/${name}_log.csv"
 done
 
-echo ""
-echo "=== Computing metrics ==="
+echo "Computing metrics..."
+cd "$ROOT_DIR"
 python3 metrics.py
 
-echo ""
-echo "✅ All experiments complete."
+echo "All experiments complete."

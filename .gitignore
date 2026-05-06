@@ -1,13 +1,10 @@
 build/
-bin/UAVSearch
+bin/
 *.o
 *.out
-*.d
-*.cmake
-CMakeCache.txt
-CMakeFiles/
+*.tmp
+__pycache__/
+*.pyc
 
-
-# large simulation outputs
-output/*.csv
-
+# Large generated simulation logs
+output/exp5_*_complex_log.csv
