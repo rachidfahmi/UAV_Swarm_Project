@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR"
 
 BIN="$ROOT_DIR/bin/UAVSearch"
 CFG="$ROOT_DIR/config"
@@ -57,7 +58,6 @@ for entry in "${EXPERIMENTS[@]}"; do
 done
 
 echo "Computing metrics..."
-cd "$ROOT_DIR"
 python3 metrics.py
 
 echo "All experiments complete."
