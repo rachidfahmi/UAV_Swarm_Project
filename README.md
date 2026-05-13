@@ -1,8 +1,4 @@
-# Multi-UAV Search and Coordination via Cell-DEVS
-
-A Cadmium-based Cell-DEVS discrete-event simulation of cooperative UAV search on a heterogeneous grid environment. The model compares multiple coordination strategies (independent, partitioned, shared-information) with probability-field diffusion, uncertainty-guided navigation, and scalability testing on 30×30 and 50×50 grids.
-
-## Overview
+### Final Term Project -  Multi-UAV Search and Coordination using Advanced Cell-DEVS Models
 
 **Academic Context:**  
 This is a graduate-level term project for **SYSC 5104 — Methodologies for Discrete Event Modelling and Simulation** (Carleton University), taught by Prof. Gabriel Wainer. The project extends earlier coursework into a comprehensive research-oriented Cell-DEVS simulation framework. It demonstrates rigorous DEVS/Cell-DEVS modeling, hierarchical simulation design, experimentation methodology, reproducible workflows, and advanced spatial modeling—core objectives of the course.
@@ -303,54 +299,6 @@ The simulator leverages Cadmium's DEVS middleware for:
 
 ---
 
-## Troubleshooting
-
-**JSON parse error:**
-```bash
-python3 -m json.tool config/base_single_uav.json > /dev/null
-```
-
-**Cadmium "component ID already defined":**
-Verify that custom cell regions in JSON do not overlap unintentionally.
-
-**Binary missing:**
-```bash
-bash build_sim.sh
-```
-
-**Python import errors (restricted environment):**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install matplotlib numpy pandas
-python3 visualize.py
-```
-Reactivate the venv each new terminal session.
-
----
-
-## Suggested `.gitignore`
-
-```
-# Build artifacts
-build/
-bin/
-CMakeFiles/
-
-# Temporary
-tmp/
-__pycache__/
-*.pyc
-
-# Generated outputs
-output/*.csv
-figures/*.png
-```
-
-(Keep `config/` and pre-generated `videos/` in version control.)
-
----
-
 ## Course Context and Project Objectives
 
 This project is developed as a term project for **SYSC 5104: Methodologies for Discrete Event Modelling and Simulation** at Carleton University, under the instruction of Professor Gabriel Wainer.
@@ -372,10 +320,4 @@ This project is developed as a term project for **SYSC 5104: Methodologies for D
 6. **Decentralized Coordination:** Test trade-offs between communication overhead and exploration efficiency
 
 The project demonstrates not just working code, but a rigorous, reproducible simulation artifact suitable for research publication or academic extension.
-
----
-
-## Citation / License
-
-[Add license and citation information as applicable.]
 
