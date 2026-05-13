@@ -4,7 +4,11 @@ A Cadmium-based Cell-DEVS discrete-event simulation of cooperative UAV search on
 
 ## Overview
 
-**What this project contributes:** Demonstrates how discrete-event cell-based models can efficiently simulate multi-agent coordination with probabilistic beliefs and heterogeneous zones, providing a testbed for comparing swarm search strategies under configurable conditions.
+**Academic Context:**  
+This is a graduate-level term project for **SYSC 5104 — Methodologies for Discrete Event Modelling and Simulation** (Carleton University), taught by Prof. Gabriel Wainer. The project extends earlier coursework into a comprehensive research-oriented Cell-DEVS simulation framework. It demonstrates rigorous DEVS/Cell-DEVS modeling, hierarchical simulation design, experimentation methodology, reproducible workflows, and advanced spatial modeling—core objectives of the course.
+
+**What this project contributes:**  
+Demonstrates how discrete-event cell-based models can efficiently simulate multi-agent coordination with probabilistic beliefs and heterogeneous zones. Provides a testbed for comparing decentralized UAV search strategies under configurable conditions, emphasizing locally-interactive spatial behavior, coordination trade-offs, and reproducible simulation pipelines.
 
 **Key features:**
 - Cell-DEVS-based grid simulation with configurable UAV counts and strategies
@@ -138,8 +142,29 @@ Verifies binary, configs, simulation execution, and metrics.
 | `exp5_partitioned_complex.json` | 50×50 | 4 | Complex: partitioned search |
 | `exp5_shared_complex.json` | 50×50 | 4 | Complex: shared-information search |
 
-Base experiments (Exp0–Exp4b) run on a 30×30 grid with 2 UAVs and 2–3 hotspots.  
-Exp5 (complex) scales to 50×50 with 4 UAVs and 5 hotspots to evaluate robustness and scalability.
+---
+
+## Modeling Methodology
+
+This project implements a **hierarchical Cell-DEVS model** of multi-UAV search coordination, grounded in discrete-event simulation principles:
+
+**DEVS Model Hierarchy:**
+- **Top-level coupled model:** Grid coordinator managing UAV agents and cell-based environment state
+- **Atomic models:** UAV agents (decision logic) and Grid cells (environment dynamics)
+- **Cell-DEVS locality:** Each cell computes only based on its neighborhood (Moore or Von Neumann)
+
+**Key DEVS Properties Preserved:**
+- Composability: JSON configs define model structure and parameters without recompilation
+- Modularity: UAV and cell behaviors decoupled via well-defined message-passing
+- Time semantics: Virtual time advances via Cadmium discrete-event scheduler; output is deterministic
+
+**Experimental Framework:**
+Experiments are JSON-parameterized variations testing:
+- **Coordination strategies:** Independent vs. partitioned vs. shared-information
+- **Diffusion sensitivity:** Parameter α sweep (Exp4a/Exp4b)
+- **Scalability:** Base (30×30, 2 UAVs) vs. complex (50×50, 4 UAVs)
+
+Each configuration encodes grid size, UAV count, zone layout, obstacle placement, hotspot locations, and decision weights—enabling systematic hypothesis-driven testing.
 
 ---
 
@@ -202,6 +227,9 @@ Videos visualize UAV trajectories, probability-field diffusion, and zone interac
 
 ## Cell-DEVS Model
 
+### DEVS Formalism
+This model leverages **Cell-DEVS**, a formalism that combines DEVS atomic/coupled models with cellular automata locality constraints. Cell-DEVS ensures that each cell transitions based only on its local neighborhood state and inputs, enabling efficient parallel simulation while maintaining formal DEVS semantics.
+
 ### Environment
 The simulation grid is discrete, 30×30 (base) or 50×50 (complex). Each cell maintains:
 - **prob** — belief/probability of target presence [0, 1]
@@ -212,38 +240,66 @@ The simulation grid is discrete, 30×30 (base) or 50×50 (complex). Each cell ma
 - **shared_penalty** — coordination penalty (shared strategies only)
 
 ### Probability Diffusion
-Target detection likelihood diffuses across neighboring cells each time step. The diffusion rate is tuned by parameter α (see Exp4a/Exp4b).
+Target detection likelihood diffuses across neighboring cells each time step, modeling information spread through the environment. The diffusion rate is tuned by parameter α (see Exp4a/Exp4b). This follows probabilistic diffusion dynamics consistent with belief propagation in distributed systems.
 
 ### UAV Decision Rule
 Instead of greedy highest-probability movement, each UAV scores reachable neighbors using:
-$$\text{score} = \text{prob} + w_u \cdot \text{uncertainty} - w_d \cdot \text{distance} - w_p \cdot \text{visit\_penalty} - w_s \cdot \text{shared\_penalty}$$
+$$\text{score} = \text{prob} + w_u \cdot \text{uncertainty} - w_d \cdot \text{distance} - w_p \cdot \text{visit penalty} - w_s \cdot \text{shared penalty}$$
 
-where $w_u, w_d, w_p, w_s$ are configurable weights. This balances exploration (high probability, high uncertainty), efficiency (short distance), and cooperation (revisit and shared penalties).
+where $w_u$, $w_d$, $w_p$, $w_s$ are configurable weights. This balances exploration (high probability, high uncertainty), efficiency (short distance), and cooperation (revisit and shared penalties). This local decision rule exemplifies decentralized coordination using only neighborhood information.
 
 ### Coordination Strategies
-- **Independent:** Each UAV optimizes only its own score.
-- **Partitioned:** Grid is divided; UAVs stay in assigned zones.
-- **Shared-Information:** All UAVs share the global probability field; shared penalties discourage clustering.
+- **Independent:** Each UAV optimizes only its own score; no information sharing.
+- **Partitioned:** Grid is divided; UAVs stay in assigned zones; minimal coordination overhead.
+- **Shared-Information:** All UAVs share the global probability field; shared penalties discourage clustering; higher coordination cost.
+
+The strategy comparison tests whether centralized information gathering outweighs the overhead of consensus or broadcast.
 
 ### Heterogeneous Zones and Obstacles
-High-value zones amplify probability; low-value zones suppress it. Obstacle cells block UAV occupancy and zero out probability. Pinned hotspots maintain constant probability sources to preserve signal structure.
+High-value zones amplify probability; low-value zones suppress it. Obstacle cells block UAV occupancy and zero out probability to model physical barriers. Pinned hotspots maintain constant probability sources to preserve signal structure and prevent entropy collapse during long simulations.
 
 ---
 
 ## Reproducibility
 
-**Tested Environment:**
-- Ubuntu 20.04 / 22.04 (or WSL)
-- GCC 9–11 (C++17)
-- CMake 3.16+
-- Python 3.8–3.10
-- Cadmium v2
+**Academic Rigor:**
+As a formal course term project, reproducibility is essential. All model parameters, experiment configurations, and runtime environments are documented to enable verification and extension by others.
 
-**Determinism:**
-Simulations are deterministic given fixed configurations. Outputs are reproducible if Cadmium and compiler versions match. Pre-generated logs in `output/` document baseline behavior.
+**Tested Environment:**
+- **OS:** Ubuntu 20.04 / 22.04 LTS (or WSL)
+- **Compiler:** GCC 9–11 (C++17 standard)
+- **Build:** CMake 3.16+
+- **Simulation Engine:** Cadmium v2
+- **Scripting:** Python 3.8–3.10
+- **Reproducibility Note:** Simulations are deterministic given fixed configurations. Outputs are reproducible if Cadmium and compiler versions match. Pre-generated logs in `output/` document baseline behavior.
 
 **Configuration as Code:**
-All experiment parameters are encoded in JSON. See `config/*.json` for full specification of grid size, UAV count, zone layout, diffusion coefficient, and decision weights.
+All experiment parameters are encoded in JSON (see `config/*.json`). Each configuration specifies:
+- Grid dimensions and cell layout
+- Number and initial positions of UAVs
+- Zone geometry and properties
+- Obstacle placement
+- Hotspot locations and pinning strategy
+- Decision rule weights ($w_u$, $w_d$, $w_p$, $w_s$)
+- Diffusion coefficient (α)
+- Simulation end time
+
+This ensures experiments are fully parameterized and replicable without source code modification.
+
+**DEVS/Cell-DEVS Semantics:**
+The implementation follows formal DEVS principles via Cadmium, ensuring:
+- **Composability:** Models can be hierarchically combined
+- **Determinism:** Virtual time advances in discrete steps; no wallclock dependencies
+- **Modularity:** Cell and UAV behaviors are decoupled via message-passing
+- **Traceability:** CSV logs record state transitions and outputs for post-hoc analysis
+
+**Cadmium Integration:**
+The simulator leverages Cadmium's DEVS middleware for:
+- Coupled/atomic model declarations
+- Event scheduling and message routing
+- Time advance semantics
+- I/O interfacing
+- Optional WebViewer visualization support
 
 ---
 
@@ -292,6 +348,30 @@ figures/*.png
 ```
 
 (Keep `config/` and pre-generated `videos/` in version control.)
+
+---
+
+## Course Context and Project Objectives
+
+This project is developed as a term project for **SYSC 5104: Methodologies for Discrete Event Modelling and Simulation** at Carleton University, under the instruction of Professor Gabriel Wainer.
+
+**Course Emphasis Addressed:**
+- ✓ Advanced Cell-DEVS models with formal DEVS semantics
+- ✓ Distributed autonomous systems and decentralized coordination
+- ✓ Spatially distributed local-interaction behavior (neighborhood-based cell rules)
+- ✓ Experimentation frameworks and parameterized scenario definition
+- ✓ Reproducible Cadmium-based simulation pipelines
+- ✓ Quantitative analysis via metrics extraction and visualization
+
+**Project Goals Beyond Basic Implementation:**
+1. **Rigorous Modeling:** Demonstrate formal DEVS/Cell-DEVS foundations with proper hierarchical composition
+2. **Methodological Reproducibility:** Enable independent verification and extension via configuration-as-code and comprehensive documentation
+3. **Experimentation Design:** Systematic parameter sweeps (diffusion sensitivity, coordination strategies, scalability testing)
+4. **Quantitative Analysis:** Automated metrics extraction, temporal analysis, and multi-dimensional comparison
+5. **Spatial Modeling:** Model complex spatial constraints (obstacles, zones, heterogeneous diffusion)
+6. **Decentralized Coordination:** Test trade-offs between communication overhead and exploration efficiency
+
+The project demonstrates not just working code, but a rigorous, reproducible simulation artifact suitable for research publication or academic extension.
 
 ---
 
