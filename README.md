@@ -1,335 +1,301 @@
-# Multi-UAV Search and Coordination using Advanced Cell-DEVS Models
+# Multi-UAV Search and Coordination via Cell-DEVS
 
-A Cadmium / Cell-DEVS simulation of cooperative UAV search on a 30×30 grid with multiple coordination strategies, probability-field diffusion, heterogeneous zones, uncertainty-guided search, and post-processing scripts for metrics and figures.
+A Cadmium-based Cell-DEVS discrete-event simulation of cooperative UAV search on a heterogeneous grid environment. The model compares multiple coordination strategies (independent, partitioned, shared-information) with probability-field diffusion, uncertainty-guided navigation, and scalability testing on 30×30 and 50×50 grids.
 
+## Overview
 
-## Repository structure
+**What this project contributes:** Demonstrates how discrete-event cell-based models can efficiently simulate multi-agent coordination with probabilistic beliefs and heterogeneous zones, providing a testbed for comparing swarm search strategies under configurable conditions.
 
-- `main/` — C++ source code
-- `main/include/` — Cell state and cell behavior headers
-- `config/` — JSON scenario files
-- `output/` — generated simulation logs
-- `figures/` — generated figures for analysis/report
-- `videos/` — pre-generated simulation videos for all main experiments
-- `build_sim.sh` — build script
-- `check.sh` — validation script
-- `run.sh` — batch experiment runner
-- `metrics.py` — metrics extraction from logs
-- `visualize.py` — figure generation
-- `README.md` — this file
-- `model.md` — model notes / supporting description
+**Key features:**
+- Cell-DEVS-based grid simulation with configurable UAV counts and strategies
+- Probability-field diffusion modeling target likelihood across the environment
+- Heterogeneous zones (high-value, low-value, obstacles) and pinned hotspot sources
+- Three coordination approaches: independent, partitioned, and shared-information search
+- Diffusion sensitivity analysis (alpha parameter sweep)
+- Scalability testing on large grids (base 30×30, complex 50×50)
+- Automated metrics extraction and figure generation
+- Pre-generated simulation videos illustrating temporal dynamics
 
-## Requirements
+**Simulation pipeline:**  
+`JSON config → Cadmium C++ simulation → CSV logs → Python metrics → Visualizations`
 
-You need:
-- Linux / WSL environment
-- CMake
-- g++
-- Python 3
-- Cadmium available in your include path / local setup
-- Python packages for optional visualization scripts: `matplotlib`, `numpy`, `pandas`
+---
 
-## Build
+## Quick Start
 
-Build the simulator with:
-
+### 1. Build and Validate
 ```bash
 bash build_sim.sh
-```
-
-This generates the executable:
-
-```
-./bin/UAVSearch
-```
-
-## Quick validation
-
-Before running all experiments, validate the project with:
-
-```bash
 ./check.sh
 ```
 
-This checks:
-
-- binary exists
-- configs are valid
-- a quick simulation runs
-- metrics script works
-- outputs are generated
-
-## Run a single scenario
-
-### General usage
-
-```
-./bin/UAVSearch SCENARIO_CONFIG.json [SIM_TIME]
-```
-
-### Example
-
-```
+### 2. Run a Single Scenario
+```bash
 ./bin/UAVSearch config/base_single_uav.json 50
 ```
 
-If SIM_TIME is omitted, the program uses its internal default.
-
-## Run all experiments
-
-To run the full experiment set:
-
+### 3. Run All Experiments
 ```bash
 ./run.sh
 ```
 
-To run a shorter test version:
-
-```bash
-./run.sh 100
-```
-
-The script runs all configured experiments and stores logs in output/.
-
-## Current experiment set
-
-| Config file                | Meaning |
-|---------------------------|--------|
-| base_single_uav.json      | Single-UAV baseline |
-| exp1_independent.json     | Multi-UAV independent search |
-| exp2_partitioned.json     | Multi-UAV partitioned search |
-| exp3_shared.json          | Multi-UAV shared-information search |
-| exp4a_alpha_low.json      | Low diffusion sensitivity (alpha = 0.02) |
-| exp4b_alpha_high.json     | High diffusion sensitivity (alpha = 0.10) |
-| exp5a_independent_complex.json | Complex scenario (50×50): independent search |
-| exp5b_partitioned_complex.json | Complex scenario (50×50): partitioned search |
-| exp5c_shared_complex.json | Complex scenario (50×50): shared-information search |
-
-The Exp5 scenarios extend the model to a larger and more complex environment (50×50 grid, 4 UAVs, 5 hotspots) to evaluate scalability and robustness.
-
-## Stress scenarios
-
-Additional large-scale stress scenarios are provided by the Exp5 configuration files:
-
-- `exp5a_independent_complex.json`
-- `exp5b_partitioned_complex.json`
-- `exp5c_shared_complex.json`
-
-These scenarios extend the search space to a 50×50 grid, increase the number of UAVs to four, and use five pinned hotspots in order to evaluate robustness, scalability, and coordination behavior under more demanding conditions.
-
-They can be executed using:
-
-```bash
-./bin/UAVSearch config/EXP5_CONFIG_NAME.json 1000
-```
-## Metrics
-
-After running experiments, compute metrics with:
-
+### 4. Generate Metrics and Figures
 ```bash
 python3 metrics.py
-```
-
-The script reports:
-
-- coverage percentage
-- number of visited cells
-- overlap percentage
-- revisit intensity
-- first detection time
-- number of hotspots found
-
-## Figure generation
-
-Generate all figures with:
-
-```bash
 python3 visualize.py
 ```
 
-This produces figures in figures/.
+All outputs are written to `output/` and `figures/`.
 
-## Main generated figures
+---
 
-| Figure | Meaning |
-|--------|--------|
-| fig0_environment.png | Environment layout: zones, obstacles, UAV starts, and hotspots |
-| fig1_heatmaps.png | Final probability fields for base experiments (Exp0–Exp4b) |
-| fig2_metrics.png | Quantitative metrics comparison across base experiments |
-| fig3_coverage_time.png | Coverage growth over time for base experiments |
-| fig4_exp1_vs_exp3.png | Temporal comparison: independent vs shared-information search |
-| fig5_alpha_comparison.png | Diffusion sensitivity comparison (low vs high α) |
-| fig6_radar.png | Multi-metric radar summary (coverage, detection, efficiency, speed) |
-| fig7_uncertainty_time.png | Uncertainty evolution over time for base experiments |
-| fig8_exp5_heatmaps.png | Final probability fields for complex scenario (Exp5a–Exp5c) |
-| fig9_exp5_coverage_time.png | Coverage over time for complex scenario (Exp5) |
-| fig10_exp5_metrics.png | Quantitative metrics comparison for Exp5 scenarios |
-| fig11_exp5_uncertainty_time.png | Uncertainty evolution over time for Exp5 scenarios |
+## Requirements
 
-## Typical workflow
+- **OS:** Linux or WSL
+- **Build:** CMake 3.10+, g++ (C++17)
+- **Runtime:** Python 3.6+
+- **Simulation:** Cadmium v2 (in include path or local setup)
+- **Visualization:** `matplotlib`, `numpy`, `pandas` (optional; use venv if system install unavailable)
 
-Recommended order:
-
-```bash
-bash build_sim.sh
-./check.sh
-./run.sh
-python3 metrics.py
-python3 visualize.py
-```
-## Expected Outputs
-
-After running `./run.sh`, the repository should contain:
-
-- `output/*_log.csv` experiment logs
-- updated `output/uav_log.csv` from the last executed scenario
-
-After running `python3 visualize.py`, the repository should contain:
-
-- `figures/*.png` generated report figures
-
-## Simulation Videos
-
-Pre-generated simulation videos are included in the videos/ directory to illustrate the temporal evolution of UAV movement and probability-field diffusion under the different coordination strategies.
-
-Included examples:
-
-- exp0_single_v2.mp4
-- exp1_independent_v2.mp4
-- exp2_partitioned_v2.mp4
-- exp3_shared_v2.mp4
-- exp4a_alpha_low_v2.mp4
-- exp4b_alpha_high_v2.mp4
-- exp5_independent_complex_v2.mp4
-- exp5_partitioned_complex_v2.mp4
-- exp5_shared_complex_v2.mp4
-
-Additional comparison videos are also provided, including alpha sensitivity and strategy-to-strategy comparisons.
-
-These videos complement the CSV logs and static figures by providing a direct visual interpretation of swarm coordination behavior during execution.
-
-## Output files
-
-After successful runs:
-
-- logs are saved as output/*_log.csv
-- figures are saved as figures/*.png
-
-Typical logs:
-
-- exp0_single_log.csv
-- exp1_independent_log.csv
-- exp2_partitioned_log.csv
-- exp3_shared_log.csv
-- exp4a_alpha_low_log.csv
-- exp4b_alpha_high_log.csv
-## Project summary
-
-This project models a multi-UAV search process using a Cell-DEVS grid in Cadmium.
-
-The environment is a 30×30 discrete grid. Each cell stores a state with:
-- `prob`: target-detection probability or belief value in `[0,1]`
-- `uav`: UAV occupancy / movement code
-- `zone`: environment type
-- `uncertainty`: local search uncertainty
-- `visit_penalty`: revisit discouragement
-- `shared_penalty`: shared coordination discouragement
-
-The model includes:
-- probability diffusion
-- probability + distance decision scoring
-- heterogeneous regions
-- obstacle barriers
-- uncertainty-aware search
-- multiple coordination strategies
-
-## Model features
-
-### Search behavior
-UAVs move using a score-based local rule rather than simple highest-probability greedy motion.
-
-The score combines:
-- local probability
-- local uncertainty
-- travel distance
-- revisit penalty
-- shared penalty
-- zone preference
-
-### Environment structure
-The environment is not uniform. It includes:
-- high-value zones
-- low-value zones
-- obstacle cells
-
-Obstacle cells block UAV occupancy and suppress probability there.
-
-### Coordination logic
-Different experiment files enable different coordination setups:
-- single-UAV baseline
-- multi-UAV independent search
-- partitioned search
-- shared-information search
-- diffusion sensitivity analysis
-## Important implementation notes
-
-1. **Hotspots**
-
-   Some hotspot cells are configured as pinned sources to preserve strong signal structure during experiments.
-
-2. **Heterogeneous environment**
-
-   The final implementation includes:
-
-   - high-value zones
-   - low-value zones
-   - obstacle barriers
-
-   So the grid is not fully open in the final version.
-
-
-## Troubleshooting
-
-### JSON parse error
-
-Validate a config file with:
-
-```bash
-python3 -m json.tool config/base_single_uav.json > /dev/null
-```
-
-### Cadmium "component ID already defined"
-
-This usually means the same cell appears in more than one custom cell_map block in a JSON config. Make sure custom regions do not overlap unless intentionally supported by your setup.
-
-### Binary missing
-
-Rebuild with:
-
-```bash
-bash build_sim.sh
-```
-### Python package installation in restricted environments
-
-On some systems, such as university servers, installing Python packages using `sudo` or `pip install --user` may fail because the Python environment is restricted or externally managed.
-
-If you encounter errors such as:
-
-- `ModuleNotFoundError: No module named 'matplotlib'`
-- `externally-managed-environment`
-
-use a Python virtual environment instead:
-
+**Python dependencies (optional, for visualization):**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install matplotlib numpy pandas
 ```
-Then run the visualization script, if it is included:
 
-python visualize.py
+---
 
-Each time you open a new terminal, activate the environment again:
+## Repository Structure
 
+```
+.
+├── main/                    # C++ source code
+│   ├── main.cpp
+│   └── include/
+│       ├── uav_search_state.hpp
+│       └── uav_search_cell.hpp
+├── config/                  # JSON experiment configurations
+├── build/                   # CMake build artifacts (generated)
+├── bin/                     # Compiled executable (generated)
+├── output/                  # CSV logs (generated)
+├── figures/                 # PNG figures (generated)
+├── tmp/                     # Temporary files
+├── videos/                  # Pre-generated .mp4 videos
+├── CMakeLists.txt
+├── build_sim.sh            # Build script
+├── run.sh                  # Batch experiment runner
+├── check.sh                # Validation script
+├── metrics.py              # Post-process logs → metrics
+├── visualize.py            # Generate figures
+├── model.md                # Technical model notes
+└── README.md               # This file
+```
+
+**Note:** `build/`, `bin/`, `output/`, and generated `figures/` are build artifacts; consider adding them to `.gitignore`.
+
+---
+
+## Building and Running
+
+### Build
+```bash
+bash build_sim.sh
+```
+Produces `./bin/UAVSearch`.
+
+### Single Run
+```bash
+./bin/UAVSearch config/BASE_SINGLE_UAV.json [SIM_TIME]
+```
+If `SIM_TIME` is omitted, internal defaults apply.
+
+### Batch Runs
+```bash
+./run.sh            # Full suite (default time)
+./run.sh 100        # Shorter runs (100 time units)
+```
+
+### Validation
+```bash
+./check.sh
+```
+Verifies binary, configs, simulation execution, and metrics.
+
+---
+
+## Experiment Configurations
+
+| Config File | Grid | UAVs | Description |
+|---|---|---|---|
+| `base_single_uav.json` | 30×30 | 1 | Baseline single-UAV search |
+| `exp1_independent.json` | 30×30 | 2 | Multi-UAV, independent decisions |
+| `exp2_partitioned.json` | 30×30 | 2 | Multi-UAV, partitioned zones |
+| `exp3_shared.json` | 30×30 | 2 | Multi-UAV, shared probability field |
+| `exp4a_alpha_low.json` | 30×30 | 2 | Low diffusion sensitivity (α=0.02) |
+| `exp4b_alpha_high.json` | 30×30 | 2 | High diffusion sensitivity (α=0.10) |
+| `exp5_independent_complex.json` | 50×50 | 4 | Complex: independent search |
+| `exp5_partitioned_complex.json` | 50×50 | 4 | Complex: partitioned search |
+| `exp5_shared_complex.json` | 50×50 | 4 | Complex: shared-information search |
+
+Base experiments (Exp0–Exp4b) run on a 30×30 grid with 2 UAVs and 2–3 hotspots.  
+Exp5 (complex) scales to 50×50 with 4 UAVs and 5 hotspots to evaluate robustness and scalability.
+
+---
+
+## Metrics
+
+After running experiments, extract metrics:
+```bash
+python3 metrics.py
+```
+
+**Reported metrics:**
+
+| Metric | Definition |
+|---|---|
+| **Coverage (%)** | Percentage of grid cells visited at least once |
+| **Visited Cells** | Absolute count of unique cells explored |
+| **Overlap (%)** | Percentage of cells visited by multiple UAVs |
+| **Revisit Intensity** | Average number of revisits per cell (normalized) |
+| **First Detection Time** | Timestep at which the first hotspot is detected |
+| **Hotspots Found** | Count of distinct hotspots discovered |
+
+Metrics are printed to stdout and typically appended to a summary file for comparison.
+
+---
+
+## Visualization and Videos
+
+### Generate Figures
+```bash
+python3 visualize.py
+```
+
+**Generated figures:**
+
+| Figure | Content |
+|---|---|
+| `fig0_environment.png` | Grid layout, zones, obstacles, UAV starts, hotspots |
+| `fig1_heatmaps.png` | Final probability fields (Exp0–Exp4b base runs) |
+| `fig2_metrics.png` | Quantitative metrics comparison (base experiments) |
+| `fig3_coverage_time.png` | Coverage growth over time |
+| `fig4_exp1_vs_exp3.png` | Independent vs. shared-information search temporal profile |
+| `fig5_alpha_comparison.png` | Diffusion sensitivity (low vs. high α) |
+| `fig6_radar.png` | Multi-metric radar plot |
+| `fig7_uncertainty_time.png` | Uncertainty evolution (base experiments) |
+| `fig8_exp5_heatmaps.png` | Final probability fields (Exp5 complex scenarios) |
+| `fig9_exp5_coverage_time.png` | Coverage growth (Exp5) |
+| `fig10_exp5_metrics.png` | Metrics comparison (Exp5) |
+| `fig11_exp5_uncertainty_time.png` | Uncertainty evolution (Exp5) |
+
+### Pre-Generated Videos
+Included in `videos/`:
+- `exp0_single_v2.mp4`, `exp1_independent_v2.mp4`, `exp2_partitioned_v2.mp4`, `exp3_shared_v2.mp4`
+- `exp4a_alpha_low_v2.mp4`, `exp4b_alpha_high_v2.mp4`
+- `exp5_independent_complex_v2.mp4`, `exp5_partitioned_complex_v2.mp4`, `exp5_shared_complex_v2.mp4`
+- Additional comparison videos (alpha sensitivity, strategy comparison)
+
+Videos visualize UAV trajectories, probability-field diffusion, and zone interactions in real time.
+
+---
+
+## Cell-DEVS Model
+
+### Environment
+The simulation grid is discrete, 30×30 (base) or 50×50 (complex). Each cell maintains:
+- **prob** — belief/probability of target presence [0, 1]
+- **uav** — occupancy code (which UAV, if any)
+- **zone** — cell type (high-value, low-value, obstacle, neutral)
+- **uncertainty** — local search uncertainty metric
+- **visit_penalty** — discouragement for revisiting
+- **shared_penalty** — coordination penalty (shared strategies only)
+
+### Probability Diffusion
+Target detection likelihood diffuses across neighboring cells each time step. The diffusion rate is tuned by parameter α (see Exp4a/Exp4b).
+
+### UAV Decision Rule
+Instead of greedy highest-probability movement, each UAV scores reachable neighbors using:
+$$\text{score} = \text{prob} + w_u \cdot \text{uncertainty} - w_d \cdot \text{distance} - w_p \cdot \text{visit\_penalty} - w_s \cdot \text{shared\_penalty}$$
+
+where $w_u, w_d, w_p, w_s$ are configurable weights. This balances exploration (high probability, high uncertainty), efficiency (short distance), and cooperation (revisit and shared penalties).
+
+### Coordination Strategies
+- **Independent:** Each UAV optimizes only its own score.
+- **Partitioned:** Grid is divided; UAVs stay in assigned zones.
+- **Shared-Information:** All UAVs share the global probability field; shared penalties discourage clustering.
+
+### Heterogeneous Zones and Obstacles
+High-value zones amplify probability; low-value zones suppress it. Obstacle cells block UAV occupancy and zero out probability. Pinned hotspots maintain constant probability sources to preserve signal structure.
+
+---
+
+## Reproducibility
+
+**Tested Environment:**
+- Ubuntu 20.04 / 22.04 (or WSL)
+- GCC 9–11 (C++17)
+- CMake 3.16+
+- Python 3.8–3.10
+- Cadmium v2
+
+**Determinism:**
+Simulations are deterministic given fixed configurations. Outputs are reproducible if Cadmium and compiler versions match. Pre-generated logs in `output/` document baseline behavior.
+
+**Configuration as Code:**
+All experiment parameters are encoded in JSON. See `config/*.json` for full specification of grid size, UAV count, zone layout, diffusion coefficient, and decision weights.
+
+---
+
+## Troubleshooting
+
+**JSON parse error:**
+```bash
+python3 -m json.tool config/base_single_uav.json > /dev/null
+```
+
+**Cadmium "component ID already defined":**
+Verify that custom cell regions in JSON do not overlap unintentionally.
+
+**Binary missing:**
+```bash
+bash build_sim.sh
+```
+
+**Python import errors (restricted environment):**
+```bash
+python3 -m venv venv
 source venv/bin/activate
+pip install matplotlib numpy pandas
+python3 visualize.py
+```
+Reactivate the venv each new terminal session.
+
+---
+
+## Suggested `.gitignore`
+
+```
+# Build artifacts
+build/
+bin/
+CMakeFiles/
+
+# Temporary
+tmp/
+__pycache__/
+*.pyc
+
+# Generated outputs
+output/*.csv
+figures/*.png
+```
+
+(Keep `config/` and pre-generated `videos/` in version control.)
+
+---
+
+## Citation / License
+
+[Add license and citation information as applicable.]
 
