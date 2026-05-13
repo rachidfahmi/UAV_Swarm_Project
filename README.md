@@ -1,4 +1,4 @@
-### Final Term Project -  Multi-UAV Search and Coordination using Advanced Cell-DEVS Models
+# Final Term Project -  Multi-UAV Search and Coordination using Advanced Cell-DEVS Models
 
 **Academic Context:**  
 This is a graduate-level term project for **SYSC 5104 — Methodologies for Discrete Event Modelling and Simulation** (Carleton University), taught by Prof. Gabriel Wainer. The project extends earlier coursework into a comprehensive research-oriented Cell-DEVS simulation framework. It demonstrates rigorous DEVS/Cell-DEVS modeling, hierarchical simulation design, experimentation methodology, reproducible workflows, and advanced spatial modeling—core objectives of the course.
